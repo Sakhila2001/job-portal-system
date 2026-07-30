@@ -1,0 +1,961 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+
+}
+
+// =========================================================================
+// USERS & CANDIDATE PROFILE
+// =========================================================================
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  mobile       String?   @unique
+  passwordHash String    @map("password_hash")
+  status       String    @default("active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastLoginAt  DateTime? @map("last_login_at")
+
+  profile              UserProfile?
+  preferences          CandidatePreference?
+  resumes              Resume[]
+  education             Education[]
+  experience            CandidateExperience[]
+  skills                CandidateSkill[]
+  projects              CandidateProject[]
+  employerAccounts      EmployerAccount[]
+  jobApplications       JobApplication[]
+  savedJobs             JobSavedItem[]
+  jobAlerts             JobAlert[]
+  searchEvents          JobSearchEvent[]
+  jobImpressions        JobImpression[]
+  jobRecommendations    JobRecommendation[]
+  companyReviews        CompanyReview[]
+  reviewVotes           ReviewVote[]
+  salaryReports         SalaryReport[]
+  interviewExperiences  InterviewExperience[]
+  companyComparisons    CompanyComparison[]
+  subscriptions         UserSubscription[]
+  notifications         Notification[]
+  auditLogs             AuditLog[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id                     String   @id @default(uuid()) @db.Uuid @map("profile_id")
+  userId                 String   @unique @db.Uuid @map("user_id")
+  firstName              String   @map("first_name")
+  lastName               String   @map("last_name")
+  birthDate              DateTime? @db.Date @map("birth_date")
+  headline               String?
+  summary                String?  @db.Text
+  totalExperienceMonths  Int?     @map("total_experience_months")
+  currentCtc             Decimal? @db.Decimal(12, 2) @map("current_ctc")
+  expectedCtc            Decimal? @db.Decimal(12, 2) @map("expected_ctc")
+  openToWork             Boolean  @default(false) @map("open_to_work")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model CandidatePreference {
+  id                     String   @id @default(uuid()) @db.Uuid @map("preference_id")
+  userId                 String   @unique @db.Uuid @map("user_id")
+  remotePreferred        Boolean  @default(false) @map("remote_preferred")
+  jobAlertEnabled        Boolean  @default(true) @map("job_alert_enabled")
+  profileVisible         Boolean  @default(true) @map("profile_visible")
+  preferredJobType       String?  @map("preferred_job_type")
+  minimumExpectedSalary  Decimal? @db.Decimal(12, 2) @map("minimum_expected_salary")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_preferences")
+}
+
+model Resume {
+  id         String   @id @default(uuid()) @db.Uuid @map("resume_id")
+  userId     String   @db.Uuid @map("user_id")
+  fileUrl    String   @map("file_url")
+  fileName   String   @map("file_name")
+  parsedText String?  @db.Text @map("parsed_text")
+  isPrimary  Boolean  @default(false) @map("is_primary")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobApplications  JobApplication[]
+
+  @@index([userId])
+  @@map("resumes")
+}
+
+model Education {
+  id                String   @id @default(uuid()) @db.Uuid @map("education_id")
+  userId            String   @db.Uuid @map("user_id")
+  instituteId       String?  @db.Uuid @map("institute_id")
+  qualificationId   String   @db.Uuid @map("qualification_id")
+  specializationId  String?  @db.Uuid @map("specialization_id")
+  specialization    String?
+  startYear         Int?     @map("start_year")
+  endYear           Int?     @map("end_year")
+  score             Decimal? @db.Decimal(5, 2)
+
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qualificationRef      Qualification   @relation(fields: [qualificationId], references: [id])
+  specializationRef     Specialization? @relation(fields: [specializationId], references: [id])
+
+  @@index([userId])
+  @@map("education")
+}
+
+model CandidateExperience {
+  id           String    @id @default(uuid()) @db.Uuid @map("experience_id")
+  userId       String    @db.Uuid @map("user_id")
+  companyName  String    @map("company_name")
+  companyId    String?   @db.Uuid @map("company_id")
+  designation  String
+  startDate    DateTime  @db.Date @map("start_date")
+  endDate      DateTime? @db.Date @map("end_date")
+  isCurrent    Boolean   @default(false) @map("is_current")
+  description  String?   @db.Text
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id])
+
+  @@index([userId])
+  @@map("candidate_experience")
+}
+
+model CandidateSkill {
+  id                String  @id @default(uuid()) @db.Uuid @map("candidate_skill_id")
+  userId            String  @db.Uuid @map("user_id")
+  skillId           String  @db.Uuid @map("skill_id")
+  proficiencyLevel  String? @map("proficiency_level")
+  experienceMonths  Int?    @map("experience_months")
+  isPrimary         Boolean @default(false) @map("is_primary")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@index([userId])
+  @@index([skillId])
+  @@map("candidate_skills")
+}
+
+model CandidateProject {
+  id           String    @id @default(uuid()) @db.Uuid @map("project_id")
+  userId       String    @db.Uuid @map("user_id")
+  projectName  String    @map("project_name")
+  description  String?   @db.Text
+  projectUrl   String?   @map("project_url")
+  startDate    DateTime? @db.Date @map("start_date")
+  endDate      DateTime? @db.Date @map("end_date")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("candidate_projects")
+}
+
+// =========================================================================
+// COMPANIES
+// =========================================================================
+
+model Company {
+  id                 String   @id @default(uuid()) @db.Uuid @map("company_id")
+  legalName          String   @map("legal_name")
+  displayName        String   @map("display_name")
+  slug               String   @unique
+  companyType        String?  @map("company_type")
+  ownershipType      String?  @map("ownership_type")
+  foundedYear        Int?     @map("founded_year")
+  websiteUrl         String?  @map("website_url")
+  verificationStatus String   @default("pending") @map("verification_status")
+  isActive           Boolean  @default(true) @map("is_active")
+
+  profile               CompanyProfile?
+  locations             CompanyLocation[]
+  industries            CompanyIndustry[]
+  benefits              CompanyBenefit[]
+  employerAccounts      EmployerAccount[]
+  jobs                  Job[]
+  campaigns             JobCampaign[]
+  reviews               CompanyReview[]
+  salaryReports         SalaryReport[]
+  interviewExperiences  InterviewExperience[]
+  experienceRecords     CandidateExperience[]
+  comparisonsAsPrimary  CompanyComparison[] @relation("PrimaryCompany")
+  comparisonsAsCompared CompanyComparison[] @relation("ComparedCompany")
+
+  @@map("companies")
+}
+
+model CompanyProfile {
+  id                String   @id @default(uuid()) @db.Uuid @map("company_profile_id")
+  companyId         String   @unique @db.Uuid @map("company_id")
+  aboutCompany      String?  @db.Text @map("about_company")
+  logoUrl           String?  @map("logo_url")
+  coverImageUrl     String?  @map("cover_image_url")
+  employeeCountMin  Int?     @map("employee_count_min")
+  employeeCountMax  Int?     @map("employee_count_max")
+  overallRating     Decimal? @db.Decimal(3, 2) @map("overall_rating")
+  reviewCount       Int      @default(0) @map("review_count")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("company_profiles")
+}
+
+model CompanyLocation {
+  id              String  @id @default(uuid()) @db.Uuid @map("company_location_id")
+  companyId       String  @db.Uuid @map("company_id")
+  locationId      String  @db.Uuid @map("location_id")
+  officeType      String? @map("office_type")
+  isHeadquarters  Boolean @default(false) @map("is_headquarters")
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@index([companyId])
+  @@index([locationId])
+  @@map("company_locations")
+}
+
+model CompanyIndustry {
+  id          String  @id @default(uuid()) @db.Uuid @map("company_industry_id")
+  companyId   String  @db.Uuid @map("company_id")
+  industryId  String  @db.Uuid @map("industry_id")
+  isPrimary   Boolean @default(false) @map("is_primary")
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  industry Industry @relation(fields: [industryId], references: [id])
+
+  @@index([companyId])
+  @@index([industryId])
+  @@map("company_industries")
+}
+
+model CompanyBenefit {
+  id             String @id @default(uuid()) @db.Uuid @map("company_benefit_id")
+  companyId      String @db.Uuid @map("company_id")
+  benefitId      String @db.Uuid @map("benefit_id")
+  responseCount  Int    @default(0) @map("response_count")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  benefit Benefit @relation(fields: [benefitId], references: [id])
+
+  @@index([companyId])
+  @@index([benefitId])
+  @@map("company_benefits")
+}
+
+model EmployerAccount {
+  id         String    @id @default(uuid()) @db.Uuid @map("employer_account_id")
+  userId     String    @db.Uuid @map("user_id")
+  companyId  String    @db.Uuid @map("company_id")
+  role       String    @default("member")
+  status     String    @default("invited")
+  invitedAt  DateTime  @default(now()) @map("invited_at")
+  joinedAt   DateTime? @map("joined_at")
+
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company            Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdJobs        Job[]                @relation("JobCreatedBy")
+  interviewPanelist  InterviewPanelist[]
+
+  @@index([userId])
+  @@index([companyId])
+  @@map("employer_accounts")
+}
+
+// =========================================================================
+// JOBS
+// =========================================================================
+
+model Job {
+  id                   String    @id @default(uuid()) @db.Uuid @map("job_id")
+  companyId            String    @db.Uuid @map("company_id")
+  createdBy            String    @db.Uuid @map("created_by")
+  designationId        String    @db.Uuid @map("designation_id")
+  departmentId         String?   @db.Uuid @map("department_id")
+  title                String
+  description          String    @db.Text
+  employmentType       String    @map("employment_type")
+  workMode             String    @map("work_mode")
+  seniorityLevel       String?   @map("seniority_level")
+  minExperienceMonths  Int?      @map("min_experience_months")
+  maxExperienceMonths  Int?      @map("max_experience_months")
+  minSalary            Decimal?  @db.Decimal(12, 2) @map("min_salary")
+  maxSalary            Decimal?  @db.Decimal(12, 2) @map("max_salary")
+  salaryCurrency       String    @default("NPR") @map("salary_currency")
+  status               String    @default("draft")
+  publishedAt          DateTime? @map("published_at")
+  expiresAt            DateTime? @map("expires_at")
+
+  company               Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  creator               EmployerAccount       @relation("JobCreatedBy", fields: [createdBy], references: [id])
+  designation           Designation           @relation(fields: [designationId], references: [id])
+  department            Department?           @relation(fields: [departmentId], references: [id])
+  locations             JobLocation[]
+  skills                JobSkill[]
+  qualifications        JobQualification[]
+  benefits              JobBenefit[]
+  tags                  JobTag[]
+  media                 JobMedia[]
+  applications          JobApplication[]
+  savedBy               JobSavedItem[]
+  impressions           JobImpression[]
+  recommendations       JobRecommendation[]
+  sponsoredPlacements   SponsoredJobPlacement[]
+
+  @@index([companyId])
+  @@index([designationId])
+  @@map("jobs")
+}
+
+model JobLocation {
+  id         String  @id @default(uuid()) @db.Uuid @map("job_location_id")
+  jobId      String  @db.Uuid @map("job_id")
+  locationId String  @db.Uuid @map("location_id")
+  isPrimary  Boolean @default(false) @map("is_primary")
+
+  job      Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@index([jobId])
+  @@index([locationId])
+  @@map("job_locations")
+}
+
+model JobSkill {
+  id                   String  @id @default(uuid()) @db.Uuid @map("job_skill_id")
+  jobId                String  @db.Uuid @map("job_id")
+  skillId              String  @db.Uuid @map("skill_id")
+  importance           String? @default("nice_to_have")
+  minExperienceMonths  Int?    @map("min_experience_months")
+  isMandatory          Boolean @default(false) @map("is_mandatory")
+
+  job   Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@index([jobId])
+  @@index([skillId])
+  @@map("job_skills")
+}
+
+model JobQualification {
+  id                String  @id @default(uuid()) @db.Uuid @map("job_qualification_id")
+  jobId             String  @db.Uuid @map("job_id")
+  qualificationId   String  @db.Uuid @map("qualification_id")
+  specializationId  String? @db.Uuid @map("specialization_id")
+  isRequired        Boolean @default(true) @map("is_required")
+
+  job            Job             @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  qualification  Qualification   @relation(fields: [qualificationId], references: [id])
+  specialization Specialization? @relation(fields: [specializationId], references: [id])
+
+  @@index([jobId])
+  @@map("job_qualifications")
+}
+
+model JobBenefit {
+  id        String @id @default(uuid()) @db.Uuid @map("job_benefit_id")
+  jobId     String @db.Uuid @map("job_id")
+  benefitId String @db.Uuid @map("benefit_id")
+
+  job     Job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  benefit Benefit @relation(fields: [benefitId], references: [id])
+
+  @@index([jobId])
+  @@map("job_benefits")
+}
+
+model JobTag {
+  id     String @id @default(uuid()) @db.Uuid @map("job_tag_id")
+  jobId  String @db.Uuid @map("job_id")
+  tagId  String @db.Uuid @map("tag_id")
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  tag Tag @relation(fields: [tagId], references: [id])
+
+  @@index([jobId])
+  @@map("job_tags")
+}
+
+model JobMedia {
+  id        String @id @default(uuid()) @db.Uuid @map("job_media_id")
+  jobId     String @db.Uuid @map("job_id")
+  mediaType String @map("media_type")
+  mediaUrl  String @map("media_url")
+  caption   String?
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@map("job_media")
+}
+
+model JobCampaign {
+  id           String   @id @default(uuid()) @db.Uuid @map("campaign_id")
+  companyId    String   @db.Uuid @map("company_id")
+  campaignType String   @map("campaign_type")
+  budget       Decimal  @db.Decimal(12, 2)
+  startsOn     DateTime @db.Date @map("starts_on")
+  endsOn       DateTime @db.Date @map("ends_on")
+  status       String   @default("active")
+
+  company    Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  placements SponsoredJobPlacement[]
+
+  @@index([companyId])
+  @@map("job_campaigns")
+}
+
+model SponsoredJobPlacement {
+  id             String   @id @default(uuid()) @db.Uuid @map("placement_id")
+  campaignId     String   @db.Uuid @map("campaign_id")
+  jobId          String   @db.Uuid @map("job_id")
+  placementType  String   @map("placement_type")
+  bidAmount      Decimal  @db.Decimal(12, 2) @map("bid_amount")
+  priority       Int      @default(0)
+  startsAt       DateTime @map("starts_at")
+  endsAt         DateTime @map("ends_at")
+
+  campaign JobCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  job      Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([jobId])
+  @@map("sponsored_job_placements")
+}
+
+// =========================================================================
+// APPLICATIONS / INTERVIEWS
+// =========================================================================
+
+model JobApplication {
+  id            String    @id @default(uuid()) @db.Uuid @map("application_id")
+  jobId         String    @db.Uuid @map("job_id")
+  candidateId   String    @db.Uuid @map("candidate_id")
+  resumeId      String    @db.Uuid @map("resume_id")
+  source        String?   @default("website")
+  status        String    @default("applied")
+  coverLetter   String?   @db.Text @map("cover_letter")
+  appliedAt     DateTime  @default(now()) @map("applied_at")
+  withdrawnAt   DateTime? @map("withdrawn_at")
+
+  job              Job                        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidate        User                       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  resume           Resume                     @relation(fields: [resumeId], references: [id])
+  statusHistory    ApplicationStatusHistory[]
+  screenings       ApplicationScreening[]
+  interviews       Interview[]
+
+  @@index([jobId])
+  @@index([candidateId])
+  @@map("job_applications")
+}
+
+model ApplicationStatusHistory {
+  id                 String   @id @default(uuid()) @db.Uuid @map("application_status_history_id")
+  applicationId      String   @db.Uuid @map("application_id")
+  oldStatus          String?  @map("old_status")
+  newStatus          String   @map("new_status")
+  changedByUserId    String?  @db.Uuid @map("changed_by_user_id")
+  note               String?  @db.Text
+  changedAt          DateTime @default(now()) @map("changed_at")
+
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("application_status_history")
+}
+
+model ApplicationScreening {
+  id             String   @id @default(uuid()) @db.Uuid @map("screening_id")
+  applicationId  String   @db.Uuid @map("application_id")
+  recruiterId    String?  @db.Uuid @map("recruiter_id")
+  score          Decimal? @db.Decimal(5, 2)
+  recommendation String?
+  feedback       String?  @db.Text
+  screenedAt     DateTime @default(now()) @map("screened_at")
+
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("application_screenings")
+}
+
+model Interview {
+  id               String   @id @default(uuid()) @db.Uuid @map("interview_id")
+  applicationId    String   @db.Uuid @map("application_id")
+  scheduledBy      String?  @db.Uuid @map("scheduled_by")
+  interviewType    String   @map("interview_type")
+  status           String   @default("scheduled")
+  scheduledAt      DateTime @map("scheduled_at")
+  durationMinutes  Int?     @map("duration_minutes")
+  meetingUrl       String?  @map("meeting_url")
+
+  application JobApplication      @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  panelists   InterviewPanelist[]
+
+  @@index([applicationId])
+  @@map("interviews")
+}
+
+model InterviewPanelist {
+  id                 String  @id @default(uuid()) @db.Uuid @map("interview_panelist_id")
+  interviewId        String  @db.Uuid @map("interview_id")
+  employerAccountId  String  @db.Uuid @map("employer_account_id")
+  role               String? @default("panelist")
+
+  interview       Interview       @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  employerAccount EmployerAccount @relation(fields: [employerAccountId], references: [id])
+
+  @@index([interviewId])
+  @@index([employerAccountId])
+  @@map("interview_panelists")
+}
+
+// =========================================================================
+// SEARCH / DISCOVERY / ENGAGEMENT
+// =========================================================================
+
+model JobSavedItem {
+  id      String   @id @default(uuid()) @db.Uuid @map("saved_job_id")
+  userId  String   @db.Uuid @map("user_id")
+  jobId   String   @db.Uuid @map("job_id")
+  savedAt DateTime @default(now()) @map("saved_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@map("job_saved_items")
+}
+
+model JobAlert {
+  id          String    @id @default(uuid()) @db.Uuid @map("job_alert_id")
+  userId      String    @db.Uuid @map("user_id")
+  alertName   String    @map("alert_name")
+  frequency   String    @default("daily")
+  isActive    Boolean   @default(true) @map("is_active")
+  lastSentAt  DateTime? @map("last_sent_at")
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filters JobAlertFilter[]
+
+  @@index([userId])
+  @@map("job_alerts")
+}
+
+model JobAlertFilter {
+  id           String @id @default(uuid()) @db.Uuid @map("job_alert_filter_id")
+  jobAlertId   String @db.Uuid @map("job_alert_id")
+  filterType   String @map("filter_type")
+  filterValue  String @map("filter_value")
+
+  jobAlert JobAlert @relation(fields: [jobAlertId], references: [id], onDelete: Cascade)
+
+  @@index([jobAlertId])
+  @@map("job_alert_filters")
+}
+
+model JobSearchEvent {
+  id             String   @id @default(uuid()) @db.Uuid @map("search_event_id")
+  userId         String?  @db.Uuid @map("user_id")
+  sessionId      String?  @map("session_id")
+  queryText      String?  @map("query_text")
+  appliedFilters Json?    @map("applied_filters")
+  resultCount    Int?     @map("result_count")
+  searchedAt     DateTime @default(now()) @map("searched_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("job_search_events")
+}
+
+model JobImpression {
+  id           String   @id @default(uuid()) @db.Uuid @map("impression_id")
+  userId       String?  @db.Uuid @map("user_id")
+  jobId        String   @db.Uuid @map("job_id")
+  sessionId    String?  @map("session_id")
+  source       String?
+  rankPosition Int?     @map("rank_position")
+  viewedAt     DateTime @default(now()) @map("viewed_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  job  Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([jobId])
+  @@map("job_impressions")
+}
+
+model JobRecommendation {
+  id                   String   @id @default(uuid()) @db.Uuid @map("recommendation_id")
+  userId               String   @db.Uuid @map("user_id")
+  jobId                String   @db.Uuid @map("job_id")
+  relevanceScore       Decimal  @db.Decimal(5, 4) @map("relevance_score")
+  recommendationReason String?  @map("recommendation_reason")
+  modelVersion         String?  @map("model_version")
+  generatedAt          DateTime @default(now()) @map("generated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([jobId])
+  @@map("job_recommendations")
+}
+
+// =========================================================================
+// REVIEWS / SALARY / INTERVIEW EXPERIENCES
+// =========================================================================
+
+model CompanyReview {
+  id                String   @id @default(uuid()) @db.Uuid @map("review_id")
+  companyId         String   @db.Uuid @map("company_id")
+  authorUserId      String   @db.Uuid @map("author_user_id")
+  designationId     String?  @db.Uuid @map("designation_id")
+  locationId        String?  @db.Uuid @map("location_id")
+  employmentStatus  String?  @map("employment_status")
+  overallRating     Int      @map("overall_rating")
+  title             String?  @db.Text
+  pros              String?  @db.Text
+  cons              String?  @db.Text
+  moderationStatus  String   @default("pending") @map("moderation_status")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  company     Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  author      User           @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  designation Designation?   @relation(fields: [designationId], references: [id])
+  location    Location?      @relation(fields: [locationId], references: [id])
+  ratings     ReviewRating[]
+  votes       ReviewVote[]
+
+  @@index([companyId])
+  @@map("company_reviews")
+}
+
+model ReviewRating {
+  id                String  @id @default(uuid()) @db.Uuid @map("review_rating_id")
+  reviewId          String  @db.Uuid @map("review_id")
+  ratingCategoryId  String  @db.Uuid @map("rating_category_id")
+  rating            Decimal @db.Decimal(3, 2)
+
+  review CompanyReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+  @@map("review_ratings")
+}
+
+model ReviewVote {
+  id        String   @id @default(uuid()) @db.Uuid @map("review_vote_id")
+  reviewId  String   @db.Uuid @map("review_id")
+  userId    String   @db.Uuid @map("user_id")
+  isHelpful Boolean  @map("is_helpful")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  review CompanyReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, userId])
+  @@map("review_votes")
+}
+
+model SalaryReport {
+  id               String   @id @default(uuid()) @db.Uuid @map("salary_report_id")
+  companyId        String   @db.Uuid @map("company_id")
+  designationId    String   @db.Uuid @map("designation_id")
+  locationId       String?  @db.Uuid @map("location_id")
+  authorUserId     String   @db.Uuid @map("author_user_id")
+  annualSalary     Decimal  @db.Decimal(14, 2) @map("annual_salary")
+  salaryCurrency   String   @default("NPR") @map("salary_currency")
+  experienceMonths Int?     @map("experience_months")
+  employmentType   String?  @map("employment_type")
+  moderationStatus String   @default("pending") @map("moderation_status")
+  submittedAt      DateTime @default(now()) @map("submitted_at")
+
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  designation Designation @relation(fields: [designationId], references: [id])
+  location    Location?   @relation(fields: [locationId], references: [id])
+  author      User        @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@map("salary_reports")
+}
+
+model InterviewExperience {
+  id               String   @id @default(uuid()) @db.Uuid @map("interview_experience_id")
+  companyId        String   @db.Uuid @map("company_id")
+  designationId    String   @db.Uuid @map("designation_id")
+  authorUserId     String   @db.Uuid @map("author_user_id")
+  difficulty       String?
+  outcome          String?
+  experienceText   String   @db.Text @map("experience_text")
+  moderationStatus String   @default("pending") @map("moderation_status")
+  submittedAt      DateTime @default(now()) @map("submitted_at")
+
+  company     Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  designation Designation         @relation(fields: [designationId], references: [id])
+  author      User                @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  questions   InterviewQuestion[]
+
+  @@index([companyId])
+  @@map("interview_experiences")
+}
+
+model InterviewQuestion {
+  id                     String  @id @default(uuid()) @db.Uuid @map("interview_question_id")
+  interviewExperienceId  String  @db.Uuid @map("interview_experience_id")
+  questionId             String  @db.Uuid @map("question_id")
+  roundName              String? @map("round_name")
+  answerHint             String? @db.Text @map("answer_hint")
+
+  interviewExperience InterviewExperience @relation(fields: [interviewExperienceId], references: [id], onDelete: Cascade)
+  question            Question            @relation(fields: [questionId], references: [id])
+
+  @@index([interviewExperienceId])
+  @@index([questionId])
+  @@map("interview_questions")
+}
+
+model Question {
+  id                  String  @id @default(uuid()) @db.Uuid @map("question_id")
+  questionCategoryId  String? @db.Uuid @map("question_category_id")
+  questionText        String  @db.Text @map("question_text")
+  difficulty          String?
+  isActive            Boolean @default(true) @map("is_active")
+
+  interviewQuestions InterviewQuestion[]
+
+  @@map("questions")
+}
+
+model CompanyComparison {
+  id                 String   @id @default(uuid()) @db.Uuid @map("comparison_id")
+  userId             String   @db.Uuid @map("user_id")
+  primaryCompanyId   String   @db.Uuid @map("primary_company_id")
+  comparedCompanyId  String   @db.Uuid @map("compared_company_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  primaryCompany   Company @relation("PrimaryCompany", fields: [primaryCompanyId], references: [id], onDelete: Cascade)
+  comparedCompany  Company @relation("ComparedCompany", fields: [comparedCompanyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("company_comparisons")
+}
+
+// =========================================================================
+// SUBSCRIPTIONS / PAYMENTS / NOTIFICATIONS
+// =========================================================================
+
+model SubscriptionPlan {
+  id            String  @id @default(uuid()) @db.Uuid @map("plan_id")
+  planName      String  @map("plan_name")
+  planType      String  @map("plan_type")
+  price         Decimal @db.Decimal(12, 2)
+  billingPeriod String  @map("billing_period")
+  features      Json?
+  isActive      Boolean @default(true) @map("is_active")
+
+  subscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id         String   @id @default(uuid()) @db.Uuid @map("subscription_id")
+  userId     String   @db.Uuid @map("user_id")
+  planId     String   @db.Uuid @map("plan_id")
+  status     String   @default("active")
+  startsOn   DateTime @db.Date @map("starts_on")
+  endsOn     DateTime @db.Date @map("ends_on")
+  autoRenew  Boolean  @default(true) @map("auto_renew")
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan     SubscriptionPlan  @relation(fields: [planId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@map("user_subscriptions")
+}
+
+model Payment {
+  id                    String    @id @default(uuid()) @db.Uuid @map("payment_id")
+  subscriptionId        String    @db.Uuid @map("subscription_id")
+  amount                Decimal   @db.Decimal(12, 2)
+  currency              String    @default("NPR")
+  paymentProvider       String    @map("payment_provider")
+  providerTransactionId String?   @map("provider_transaction_id")
+  status                String    @default("pending")
+  paidAt                DateTime? @map("paid_at")
+
+  subscription UserSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@map("payments")
+}
+
+model Notification {
+  id               String    @id @default(uuid()) @db.Uuid @map("notification_id")
+  userId           String    @db.Uuid @map("user_id")
+  channel          String
+  notificationType String    @map("notification_type")
+  subject          String?
+  payload          Json?
+  status           String    @default("queued")
+  sentAt           DateTime? @map("sent_at")
+  readAt           DateTime? @map("read_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+// =========================================================================
+// LOOKUP / REFERENCE TABLES
+// =========================================================================
+
+model Skill {
+  id              String  @id @default(uuid()) @db.Uuid @map("skill_id")
+  skillName       String  @unique @map("skill_name")
+  skillCategoryId String? @db.Uuid @map("skill_category_id")
+  isActive        Boolean @default(true) @map("is_active")
+
+  candidateSkills CandidateSkill[]
+  jobSkills       JobSkill[]
+
+  @@map("skills")
+}
+
+model Designation {
+  id               String  @id @default(uuid()) @db.Uuid @map("designation_id")
+  designationName  String  @map("designation_name")
+  roleCategoryId   String? @db.Uuid @map("role_category_id")
+  isActive         Boolean @default(true) @map("is_active")
+
+  jobs                  Job[]
+  salaryReports         SalaryReport[]
+  companyReviews        CompanyReview[]
+  interviewExperiences  InterviewExperience[]
+
+  @@map("designations")
+}
+
+model Location {
+  id        String   @id @default(uuid()) @db.Uuid @map("location_id")
+  country   String
+  state     String?
+  city      String?
+  locality  String?
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+
+  companyLocations CompanyLocation[]
+  jobLocations     JobLocation[]
+  companyReviews   CompanyReview[]
+  salaryReports    SalaryReport[]
+
+  @@map("locations")
+}
+
+model Industry {
+  id               String @id @default(uuid()) @db.Uuid @map("industry_id")
+  industryName     String @map("industry_name")
+  parentIndustryId String? @db.Uuid @map("parent_industry_id")
+
+  parent          Industry?         @relation("IndustryHierarchy", fields: [parentIndustryId], references: [id])
+  children        Industry[]        @relation("IndustryHierarchy")
+  companyIndustries CompanyIndustry[]
+
+  @@map("industries")
+}
+
+model Department {
+  id             String @id @default(uuid()) @db.Uuid @map("department_id")
+  departmentName String @map("department_name")
+
+  jobs Job[]
+
+  @@map("departments")
+}
+
+model Qualification {
+  id                String @id @default(uuid()) @db.Uuid @map("qualification_id")
+  qualificationName String @map("qualification_name")
+  educationLevel    String @map("education_level")
+
+  specializations   Specialization[]
+  education         Education[]
+  jobQualifications JobQualification[]
+
+  @@map("qualifications")
+}
+
+model Specialization {
+  id                  String @id @default(uuid()) @db.Uuid @map("specialization_id")
+  qualificationId     String @db.Uuid @map("qualification_id")
+  specializationName  String @map("specialization_name")
+
+  qualification     Qualification      @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
+  education         Education[]
+  jobQualifications JobQualification[]
+
+  @@index([qualificationId])
+  @@map("specializations")
+}
+
+model Benefit {
+  id               String  @id @default(uuid()) @db.Uuid @map("benefit_id")
+  benefitName      String  @map("benefit_name")
+  benefitCategoryId String? @db.Uuid @map("benefit_category_id")
+
+  companyBenefits CompanyBenefit[]
+  jobBenefits     JobBenefit[]
+
+  @@map("benefits")
+}
+
+model Tag {
+  id      String @id @default(uuid()) @db.Uuid @map("tag_id")
+  tagName String @unique @map("tag_name")
+  tagType String @map("tag_type")
+
+  jobTags JobTag[]
+
+  @@map("tags")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid()) @db.Uuid @map("audit_log_id")
+  actorUserId  String?  @db.Uuid @map("actor_user_id")
+  entityType   String   @map("entity_type")
+  entityId     String   @db.Uuid @map("entity_id")
+  action       String
+  beforeData   Json?    @map("before_data")
+  afterData    Json?    @map("after_data")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
