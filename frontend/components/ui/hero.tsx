@@ -2,8 +2,18 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Briefcase, ChevronDown } from "lucide-react";
+import { Search, MapPin, Briefcase } from "lucide-react";
 import { popularCategories } from "@/lib/dummy-data";
+import CustomSelect from "@/components/ui/select";
+
+const experienceOptions = [
+  { value: "", label: "Select experience" },
+  { value: "fresher", label: "Fresher (0 Yrs)" },
+  { value: "1", label: "1 Year" },
+  { value: "2", label: "2 Years" },
+  { value: "3", label: "3 Years" },
+  { value: "5", label: "5+ Years" },
+];
 
 export default function Hero() {
   const router = useRouter();
@@ -56,21 +66,14 @@ export default function Hero() {
           </div>
 
           {/* Experience Select */}
-          <div className="flex items-center w-full md:w-52 px-4 border-b md:border-b-0 md:border-r border-slate-100 py-2.5 relative">
-            <Briefcase className="h-5 w-5 text-muted-foreground mr-2.5 shrink-0" />
-            <select
+          <div className="flex items-center w-full md:w-52 px-4 border-b md:border-b-0 md:border-r border-slate-100 py-2.5">
+            <CustomSelect
               value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              className="w-full text-sm text-slate-800 focus:outline-none appearance-none bg-transparent cursor-pointer pr-6"
-            >
-              <option value="">Select experience</option>
-              <option value="fresher">Fresher (0 Yrs)</option>
-              <option value="1">1 Year</option>
-              <option value="2">2 Years</option>
-              <option value="3">3 Years</option>
-              <option value="5">5+ Years</option>
-            </select>
-            <ChevronDown className="h-4 w-4 text-muted-foreground absolute right-4 pointer-events-none" />
+              onChange={setExperience}
+              options={experienceOptions}
+              placeholder="Select experience"
+              icon={<Briefcase className="h-5 w-5 text-muted-foreground shrink-0" />}
+            />
           </div>
 
           {/* Location search */}

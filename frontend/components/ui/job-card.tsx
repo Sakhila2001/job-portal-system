@@ -13,10 +13,10 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job, isSelected = false, onClick, layout = "list" }: JobCardProps) {
-  const cardStyles = `group bg-white border rounded-2xl p-5 transition-all text-left ${
+  const cardStyles = `group bg-white border border-slate-100/80 rounded-2xl p-6 transition-all duration-200 text-left ${
     isSelected
-      ? "border-brand-primary ring-2 ring-brand-primary/10 bg-brand-light/30 shadow-md"
-      : "border-border hover:border-brand-primary/30 hover:shadow-lg hover:-translate-y-0.5"
+      ? "border-brand-primary/60 ring-4 ring-brand-primary/5 bg-slate-50/50 shadow-sm"
+      : "hover:border-brand-primary/20 hover:shadow-[0_15px_35px_-8px_rgba(0,0,0,0.03)] hover:-translate-y-0.5"
   } cursor-pointer`;
 
   const renderContent = () => {

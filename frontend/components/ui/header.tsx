@@ -338,7 +338,7 @@ export default function Header() {
         <div className="fixed inset-0 z-50 flex justify-end">
           <div
             onClick={() => setIsLoginDrawerOpen(false)}
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+            className="fixed inset-0 login-backdrop transition-opacity duration-300 animate-in fade-in"
           />
 
           <div className="relative w-full sm:w-[480px] bg-white h-full shadow-2xl flex flex-col justify-between z-50 animate-in slide-in-from-right duration-300 ease-out p-8">

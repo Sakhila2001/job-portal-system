@@ -69,66 +69,66 @@ export default function RoleExplorer() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-      {/* Left Promo Card: Redesigned with premium dark theme and AI Matcher graphic */}
-      <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden shadow-xl border border-slate-800">
-        {/* Glowing visual indicators */}
-        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
-        <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-purple-500/10 blur-2xl" />
+      {/* Left Promo Card: Redesigned with premium light/indigo gradient and clean AI Matcher graphic */}
+      <div className="lg:col-span-4 bg-gradient-to-br from-indigo-50/50 via-white to-blue-50/50 rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden shadow-sm border border-indigo-100/80">
+        {/* Subtle decorative background circles */}
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-500/5 blur-2xl" />
+        <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/5 blur-xl" />
 
-        <div className="space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-300 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/25">
-            <Sparkles className="h-3.5 w-3.5" />
+        <div className="space-y-3.5 relative z-10">
+          <div className="inline-flex items-center gap-1.5 bg-brand-primary/10 text-brand-primary text-xs font-bold px-3 py-1 rounded-full border border-brand-primary/20">
+            <Sparkles className="h-3.5 w-3.5 text-brand-secondary" />
             <span>AI Match Enabled</span>
           </div>
           
-          <h3 className="text-2xl font-extrabold tracking-tight leading-snug">
+          <h3 className="text-2xl font-bold tracking-tight leading-snug text-slate-800">
             Discover jobs across popular roles
           </h3>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             Select a career path that matches your tech stack, and let our recommendation engine find matching roles.
           </p>
         </div>
 
-        {/* REDESIGNED AI PROFILE MATCHING GRAPHIC */}
+        {/* REDESIGNED AI PROFILE MATCHING GRAPHIC - Clean Light Version */}
         <div className="my-8 relative flex justify-center items-center z-10">
-          <div className="w-full max-w-[240px] bg-slate-850/50 border border-slate-700/60 rounded-2xl p-4 space-y-3.5 shadow-2xl backdrop-blur-md">
+          <div className="w-full max-w-[250px] bg-white border border-slate-100 rounded-2xl p-4.5 space-y-4 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.04)]">
             
             {/* Visual Radar Indicator */}
-            <div className="flex items-center justify-between border-b border-slate-750 pb-2">
+            <div className="flex items-center justify-between border-b border-slate-50 pb-2.5">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="text-[10px] font-bold text-slate-300 tracking-wide uppercase">AI Matcher</span>
+                <span className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase">AI Matcher</span>
               </div>
-              <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100/50">
                 94% Match
               </span>
             </div>
 
             {/* Profile Avatar and Progress bar */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2.5">
-                <div className="h-7 w-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-500/30">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs border border-brand-primary/20">
                   JS
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="h-2 w-20 bg-slate-700 rounded-full" />
-                  <div className="h-1.5 w-14 bg-slate-700 rounded-full mt-1.5" />
+                  <div className="h-2 w-20 bg-slate-100 rounded-full" />
+                  <div className="h-1.5 w-14 bg-slate-50 rounded-full mt-1.5" />
                 </div>
               </div>
               
-              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" style={{ width: "94%" }} />
+              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-brand-primary to-indigo-500 rounded-full" style={{ width: "94%" }} />
               </div>
             </div>
 
             {/* Float tags */}
-            <div className="flex flex-wrap gap-1">
-              <span className="bg-slate-800 border border-slate-750 text-[9px] text-slate-300 px-2 py-0.5 rounded-md">Next.js</span>
-              <span className="bg-slate-800 border border-slate-750 text-[9px] text-slate-300 px-2 py-0.5 rounded-md">TypeScript</span>
-              <span className="bg-slate-800 border border-slate-750 text-[9px] text-slate-300 px-2 py-0.5 rounded-md">Tailwind</span>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="bg-slate-50 border border-slate-100 text-[9px] text-slate-500 font-semibold px-2 py-0.5 rounded-md">Next.js</span>
+              <span className="bg-slate-50 border border-slate-100 text-[9px] text-slate-500 font-semibold px-2 py-0.5 rounded-md">TypeScript</span>
+              <span className="bg-slate-50 border border-slate-100 text-[9px] text-slate-500 font-semibold px-2 py-0.5 rounded-md">Tailwind</span>
             </div>
             
           </div>
@@ -137,42 +137,42 @@ export default function RoleExplorer() {
         {/* Explore All Roles Button */}
         <button
           onClick={() => router.push("/jobs")}
-          className="w-full bg-brand-primary hover:bg-brand-hover text-white text-xs font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5 group/btn"
+          className="w-full bg-brand-primary hover:bg-brand-hover text-white text-xs font-bold py-3.5 rounded-xl shadow-md shadow-brand-primary/10 hover:shadow-brand-primary/20 transition-all flex items-center justify-center gap-1.5 group/btn"
         >
           <span>Explore All Roles</span>
           <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform" />
         </button>
       </div>
 
-      {/* Right Grid of Roles: Redesigned with custom colored circular icon badges */}
-      <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {/* Right Grid of Roles: Redesigned with premium clean layout and subtle card styling */}
+      <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
         {rolesData.map((role) => {
           const IconComponent = role.icon;
           return (
             <button
               key={role.title}
               onClick={() => handleRoleSelect(role.title)}
-              className="group bg-white border border-border p-6 rounded-2xl text-left flex flex-col justify-between gap-6 transition-all hover-lift hover:border-brand-primary/20"
+              className="group bg-white border border-slate-100/90 p-5 rounded-2xl text-left flex flex-col justify-between transition-all hover:border-brand-primary/20 hover:shadow-[0_12px_25px_-5px_rgba(0,0,0,0.03)] hover:-translate-y-0.5"
             >
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 {/* Icon Container with subtle colored borders */}
-                <span className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${role.color} shadow-sm group-hover:scale-105 transition-transform`}>
-                  <IconComponent className="h-5 w-5" />
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-xl border ${role.color} shadow-xs group-hover:scale-105 transition-transform`}>
+                    <IconComponent className="h-5 w-5" />
+                  </span>
+                  
+                  {/* Subtle chevron instead of a large block at the bottom */}
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all">
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
                 
                 <div>
-                  <h4 className="font-extrabold text-slate-800 text-sm group-hover:text-brand-primary transition-colors leading-tight">
+                  <h4 className="font-bold text-slate-800 text-sm group-hover:text-brand-primary transition-colors leading-snug">
                     {role.title}
                   </h4>
-                  <p className="text-xs text-muted-foreground mt-1 font-medium">{role.jobsCount}</p>
+                  <p className="text-xs text-slate-400 mt-1 font-semibold tracking-wide uppercase">{role.jobsCount}</p>
                 </div>
-              </div>
-              
-              {/* Arrow link trigger at bottom */}
-              <div className="flex items-center justify-end border-t border-slate-50 pt-3 mt-auto">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-50 text-slate-400 group-hover:bg-brand-light group-hover:text-brand-primary transition-all">
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </span>
               </div>
             </button>
           );

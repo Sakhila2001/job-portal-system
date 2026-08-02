@@ -34,49 +34,49 @@ export default function Home() {
 
         {/* Section 3: Premium Promo Banners (Inspired by image 2) */}
         <section id="services" className="grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-20">
-          {/* Card A: Video Resume */}
-          <div className="bg-slate-900 text-white rounded-3xl p-8 flex flex-col justify-between min-h-[300px] relative overflow-hidden shadow-lg">
-            {/* Backdrop gradients */}
-            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-blue-500/20 blur-2xl" />
-            <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-xl" />
+          {/* Card A: Video Resume - Light Theme */}
+          <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50/50 text-slate-800 rounded-3xl p-8 flex flex-col justify-between min-h-[300px] relative overflow-hidden border border-slate-100 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_-8px_rgba(0,0,0,0.05)] transition-all">
+            {/* Subtle light background glows */}
+            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-blue-500/5 blur-2xl" />
+            <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/5 blur-xl" />
 
             <div className="space-y-4 relative z-10">
-              <span className="bg-blue-500/20 text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-500/30">
+              <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-full border border-blue-100/60 inline-block">
                 Exclusive Feature
               </span>
-              <h3 className="text-3xl font-extrabold tracking-tight leading-tight">
+              <h3 className="text-2xl font-bold tracking-tight leading-snug text-slate-800">
                 Stand out with a video profile
               </h3>
-              <p className="text-sm text-slate-300 max-w-md">
+              <p className="text-sm text-slate-500 leading-relaxed max-w-md">
                 Candidates with active video resumes receive up to 3x higher response rates from global tech recruiters. Upload your short pitch today.
               </p>
             </div>
             
             <div className="mt-8 flex flex-wrap gap-4 items-center relative z-10">
-              <button className="bg-white text-slate-900 hover:bg-slate-100 px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md shadow-white/5">
+              <button className="bg-brand-primary text-white hover:bg-brand-hover px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md shadow-brand-primary/10">
                 Create Video Resume
               </button>
-              <a href="#" className="text-sm font-medium text-slate-300 hover:text-white flex items-center gap-1">
+              <a href="#" className="text-sm font-bold text-slate-500 hover:text-brand-primary flex items-center gap-1 group/link">
                 <span>Learn how it works</span>
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4 group-hover/link:translate-x-0.5 transition-transform" />
               </a>
             </div>
           </div>
 
-          {/* Card B: Premium Services */}
-          <div className="bg-gradient-to-tr from-brand-primary to-indigo-900 text-white rounded-3xl p-8 flex flex-col justify-between min-h-[300px] relative overflow-hidden shadow-lg">
+          {/* Card B: Premium Services - Light Theme */}
+          <div className="bg-gradient-to-br from-orange-50/50 via-white to-indigo-50/30 text-slate-800 rounded-3xl p-8 flex flex-col justify-between min-h-[300px] relative overflow-hidden border border-orange-100/70 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_-8px_rgba(0,0,0,0.05)] transition-all">
             {/* Backdrop highlights */}
-            <div className="absolute right-0 bottom-0 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
+            <div className="absolute right-0 bottom-0 h-44 w-44 rounded-full bg-orange-500/5 blur-2xl" />
             
             <div className="space-y-4 relative z-10">
-              <div className="flex items-center gap-2 text-amber-300">
-                <Award className="h-5 w-5 fill-amber-300" />
-                <span className="text-xs font-bold uppercase tracking-wider">Top Tier Assistance</span>
+              <div className="flex items-center gap-1.5 text-orange-600">
+                <Award className="h-4 w-4 fill-orange-100" />
+                <span className="text-xs font-extrabold uppercase tracking-widest">Top Tier Assistance</span>
               </div>
-              <h3 className="text-3xl font-extrabold tracking-tight leading-tight">
+              <h3 className="text-2xl font-bold tracking-tight leading-snug text-slate-800">
                 Accelerate search with premium resume services
               </h3>
-              <p className="text-sm text-blue-100 max-w-md">
+              <p className="text-sm text-slate-500 leading-relaxed max-w-md">
                 Get your profile professionally reviewed and formatted by career experts to clear both ATS scanners and recruiter screening.
               </p>
             </div>
@@ -85,8 +85,8 @@ export default function Home() {
               <button className="bg-brand-secondary hover:bg-orange-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md shadow-brand-secondary/15">
                 Get Expert Review
               </button>
-              <div className="flex items-center gap-2 text-xs text-blue-200">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                 <span>ATS Compatible Guarantee</span>
               </div>
             </div>
