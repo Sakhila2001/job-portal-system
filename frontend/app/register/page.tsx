@@ -10,12 +10,17 @@ import {
   Briefcase,
   GraduationCap,
   ShieldCheck,
+  Loader2,
+  Mail,
 } from "lucide-react";
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [mobile, setMobile] = useState("");
   const [workStatus, setWorkStatus] = useState<"experienced" | "fresher">(
     "fresher",
@@ -23,6 +28,10 @@ export default function RegisterPage() {
   const [resumeName, setResumeName] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -30,13 +39,71 @@ export default function RegisterPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreed) {
-      alert("Please agree to the Terms and Conditions.");
+    setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
-    setSubmitted(true);
+    if (!agreed) {
+      setError("Please agree to the Terms and Conditions.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register/candidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fullName,
+          email,
+          password,
+          mobile,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Registration failed");
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResendLoading(true);
+    setResendSuccess(false);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          name: fullName,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Failed to resend verification email");
+      }
+
+      setResendSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to resend verification email");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   return (
@@ -47,37 +114,60 @@ export default function RegisterPage() {
       {/* Main Registration Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center">
         {submitted ? (
-          /* Success Screen */
+          /* Check Email Screen */
           <div className="bg-white border border-border rounded-3xl p-8 md:p-12 text-center max-w-lg w-full shadow-sm space-y-6 animate-in zoom-in-95 duration-200">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
-              <CheckCircle className="h-10 w-10" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-light/50 text-brand-primary border border-brand-primary/10">
+              <Mail className="h-8 w-8" />
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-extrabold text-slate-900">
-                Registration Successful!
+                Verify your email
               </h2>
               <p className="text-sm text-slate-500 leading-relaxed">
-                Thank you for creating an account,{" "}
-                <strong className="text-slate-800">{fullName}</strong>. We've
-                sent a verification link to{" "}
+                We've sent a verification link to{" "}
                 <span className="text-brand-primary font-medium">{email}</span>.
-                Please verify your email to unlock applications.
+                Please check your inbox and spam folder, then click the link to
+                activate your account.
               </p>
             </div>
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 text-left text-xs text-slate-500 space-y-2">
-              <div className="font-semibold text-slate-700">Next steps:</div>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Verify your email inbox.</li>
-                <li>Complete your profile resume details.</li>
-                <li>Apply to matching jobs on the search page.</li>
-              </ul>
+
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl p-3">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resendLoading || resendSuccess}
+                className="w-full text-center border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold py-3 rounded-xl transition-all disabled:opacity-50"
+              >
+                {resendLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Resending...
+                  </span>
+                ) : resendSuccess ? (
+                  "Verification email resent"
+                ) : (
+                  "Resend verification email"
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSubmitted(false);
+                  setError(null);
+                  setResendSuccess(false);
+                }}
+                className="w-full text-center text-sm text-slate-500 hover:text-slate-700 underline"
+              >
+                Use a different email
+              </button>
             </div>
-            <Link
-              href="/jobs"
-              className="block w-full text-center bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold py-3 rounded-xl transition-all shadow-sm"
-            >
-              Start Searching Jobs
-            </Link>
           </div>
         ) : (
           /* Form Screen */
@@ -168,8 +258,8 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      alert(
-                        "Please open the login drawer from the home page navbar.",
+                      window.dispatchEvent(
+                        new CustomEvent("open-login-drawer"),
                       )
                     }
                     className="text-brand-primary font-semibold hover:underline"
@@ -215,14 +305,47 @@ export default function RegisterPage() {
                   <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimum 6 characters"
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-primary placeholder-slate-400 font-medium"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Minimum 6 characters"
+                      className="w-full bg-white border border-slate-200 rounded-xl pl-4 pr-20 py-2.5 text-sm focus:outline-none focus:border-brand-primary placeholder-slate-400 font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-brand-primary hover:underline px-1 py-0.5"
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm Password */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter your password"
+                      className="w-full bg-white border border-slate-200 rounded-xl pl-4 pr-20 py-2.5 text-sm focus:outline-none focus:border-brand-primary placeholder-slate-400 font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-brand-primary hover:underline px-1 py-0.5"
+                    >
+                      {showConfirmPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Mobile number */}
@@ -309,10 +432,24 @@ export default function RegisterPage() {
                 {/* Submit button */}
                 <button
                   type="submit"
-                  className="w-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold py-3.5 rounded-xl transition-all shadow-md shadow-brand-primary/10"
+                  disabled={loading}
+                  className="w-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold py-3.5 rounded-xl transition-all shadow-md shadow-brand-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Register Now
+                  {loading ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Creating account...
+                    </span>
+                  ) : (
+                    "Register Now"
+                  )}
                 </button>
+
+                {error && !submitted && (
+                  <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl p-3">
+                    {error}
+                  </div>
+                )}
               </form>
             </div>
           </div>

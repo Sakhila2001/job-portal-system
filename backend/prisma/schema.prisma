@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -23,6 +23,7 @@ model User {
   email        String    @unique
   mobile       String?   @unique
   passwordHash String    @map("password_hash")
+  role         String    @default("candidate") @db.VarChar(20)
   status       String    @default("active")
   createdAt    DateTime  @default(now()) @map("created_at")
   lastLoginAt  DateTime? @map("last_login_at")
@@ -49,8 +50,27 @@ model User {
   subscriptions         UserSubscription[]
   notifications         Notification[]
   auditLogs             AuditLog[]
+  refreshSessions       RefreshSession[]
+  emailVerified         Boolean   @default(false) @map("email_verified")
+  verificationToken     String?   @unique @map("verification_token")
+  verificationExpires   DateTime? @map("verification_expires")
 
   @@map("users")
+}
+
+model RefreshSession {
+  id        String    @id @default(uuid()) @db.Uuid @map("refresh_session_id")
+  userId    String    @db.Uuid @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_sessions")
 }
 
 model UserProfile {
@@ -184,6 +204,8 @@ model Company {
   websiteUrl         String?  @map("website_url")
   verificationStatus String   @default("pending") @map("verification_status")
   isActive           Boolean  @default(true) @map("is_active")
+  hrContactName      String?  @map("hr_contact_name")
+  contactNumber      String?  @map("contact_number")
 
   profile               CompanyProfile?
   locations             CompanyLocation[]
