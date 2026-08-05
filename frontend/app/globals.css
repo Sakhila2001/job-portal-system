@@ -44,31 +44,31 @@
   --primary: #0f4c81; /* Premium corporate blue */
   --primary-foreground: #ffffff;
 
-  /* Secondary orange/amber accents */
-  --secondary: #ff6a00;
+  /* Secondary neutral slate/indigo accent (replacing bright neon orange) */
+  --secondary: #1e293b; /* Slate-800 for primary actions */
   --secondary-foreground: #ffffff;
 
   --muted: #f1f5f9; /* Slate-100 */
   --muted-foreground: #64748b; /* Slate-500 */
 
-  --accent: #eff6ff; /* Blue-50 */
+  --accent: #f8fafc; /* Slate-50 */
   --accent-foreground: #0f4c81;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #e2e8f0; /* Slate-200 */
+  --border: #f1f5f9; /* Slate-100 for modern thin borders */
   --input: #e2e8f0;
-  --ring: #3b82f6; /* Blue-500 */
+  --ring: #0f4c81; /* Brand primary focus ring */
 
   /* Brand-specific tokens */
   --brand-primary: #0f4c81;
-  --brand-secondary: #ff6a00;
-  --brand-accent: #f0f7ff;
-  --brand-hover: #0a365c;
+  --brand-secondary: #1e293b; /* Premium slate dark */
+  --brand-accent: #f8fafc;
+  --brand-hover: #0f172a;
   --brand-light: #eff6ff;
 
-  --radius: 0.75rem;
+  --radius: 0.5rem; /* Clean, tighter enterprise border radius (8px) */
   --login-backdrop-blur: 2px;
 }
 
@@ -81,15 +81,15 @@
   --card-foreground: #0f172a;
   --primary: #0f4c81;
   --primary-foreground: #ffffff;
-  --secondary: #ff6a00;
+  --secondary: #1e293b;
   --secondary-foreground: #ffffff;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #eff6ff;
+  --accent: #f8fafc;
   --accent-foreground: #0f4c81;
-  --border: #e2e8f0;
+  --border: #f1f5f9;
   --input: #e2e8f0;
-  --ring: #3b82f6;
+  --ring: #0f4c81;
   --login-backdrop-blur: 2px;
 }
 
@@ -99,14 +99,8 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased min-h-screen;
-    background-image:
-      radial-gradient(at 0% 0%, rgba(239, 246, 255, 0.5) 0px, transparent 50%),
-      radial-gradient(
-        at 100% 100%,
-        rgba(254, 243, 199, 0.3) 0px,
-        transparent 50%
-      );
-    background-attachment: fixed;
+    background-image: none; /* Flat background color for maximum cleanliness */
+    background-color: #f8fafc;
   }
   html {
     scroll-behavior: smooth;
@@ -117,17 +111,18 @@
 .hover-lift {
   transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -10px rgba(15, 76, 129, 0.15);
+  transform: translateY(-2px); /* Tighter, more professional lift */
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.04); /* Subtle shadow shift */
 }
 .glassmorphism {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 .login-backdrop {
   background-color: rgba(15, 23, 42, 0.35);

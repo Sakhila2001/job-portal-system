@@ -275,18 +275,18 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-border bg-white shadow-sm">
+      <header className="sticky top-0 z-40 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           
           {/* Logo and Nav links */}
           <div className="flex items-center gap-10">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-brand-primary shrink-0">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-primary text-white shadow-md shadow-brand-primary/20">
-                <Briefcase className="h-5 w-5" />
+            <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-900 shrink-0">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white shadow-xs">
+                <Briefcase className="h-4.5 w-4.5" />
               </span>
               <span>
-                Job<span className="text-brand-secondary">Portal</span>
+                Job<span className="text-slate-500 font-normal">Portal</span>
               </span>
             </Link>
 
@@ -303,10 +303,10 @@ export default function Header() {
                   >
                     <Link
                       href={menu.href}
-                      className={`text-sm font-semibold transition-colors hover:text-brand-primary flex items-center gap-0.5 border-b-2 py-5 ${
+                      className={`text-sm font-semibold transition-colors hover:text-slate-900 flex items-center gap-0.5 border-b-2 py-5 ${
                         pathname.startsWith(menu.href) || isActive
-                          ? "border-brand-secondary text-brand-primary"
-                          : "border-transparent text-slate-600"
+                          ? "border-slate-900 text-slate-900"
+                          : "border-transparent text-slate-500"
                       }`}
                     >
                       {menu.title}
@@ -335,7 +335,7 @@ export default function Header() {
                 setEmployerActiveTab("login");
                 setIsEmployerDrawerOpen(true);
               }}
-              className="text-sm font-semibold text-slate-600 hover:text-brand-primary px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors"
+              className="text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
             >
               For employers
             </button>
@@ -345,7 +345,7 @@ export default function Header() {
             {/* Candidate Login */}
             <button
               onClick={() => setIsLoginDrawerOpen(true)}
-              className="text-sm font-bold text-brand-primary hover:bg-brand-light border border-brand-primary/20 hover:border-brand-primary/30 px-5 py-2.5 rounded-xl transition-all"
+              className="text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-4 py-2 rounded-lg transition-all"
             >
               Login
             </button>
@@ -353,7 +353,7 @@ export default function Header() {
             {/* Candidate Register Page navigation */}
             <Link
               href="/register"
-              className="text-sm font-bold bg-brand-secondary hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all block text-center"
+              className="text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg shadow-xs transition-all block text-center"
             >
               Register
             </Link>

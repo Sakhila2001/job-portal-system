@@ -60,12 +60,12 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-5">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xl font-bold tracking-tight text-brand-primary"
+              className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-900"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-primary text-white shadow-md shadow-brand-primary/25">
-                <Briefcase className="h-5 w-5" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white shadow-xs">
+                <Briefcase className="h-4.5 w-4.5" />
               </span>
-              Job<span className="text-brand-secondary">Portal</span>
+              Job<span className="text-slate-500 font-normal">Portal</span>
             </Link>
 
             <p className="text-sm leading-relaxed text-slate-500 max-w-xs">
@@ -168,10 +168,9 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter Row */}
-        <div className="mt-12 rounded-2xl bg-brand-primary/5 border border-brand-primary/10 p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h4 className="font-bold text-slate-800 text-sm mb-0.5">
+            <h4 className="font-semibold text-slate-800 text-sm mb-0.5">
               Get job alerts in your inbox
             </h4>
             <p className="text-xs text-slate-500">
@@ -187,12 +186,12 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="you@email.com"
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/25 focus:border-brand-primary transition"
+                className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300 transition"
               />
             </div>
             <button
               type="submit"
-              className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-primary/90 transition shadow-sm shadow-brand-primary/20"
+              className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition shadow-xs"
             >
               <Send className="h-3.5 w-3.5" />
               Subscribe
@@ -200,17 +199,16 @@ export default function Footer() {
           </form>
         </div>
 
-        {/* Jobs by Location – Nepal Cities */}
-        <div className="mt-10">
-          <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-800 mb-3">
+        <div className="mt-8">
+          <h4 className="text-xs font-semibold text-slate-600 mb-3">
             Jobs by Location in Nepal
           </h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             {nepalLocations.map((city) => (
               <Link
                 key={city}
                 href={`/jobs?location=${city}`}
-                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 hover:border-brand-primary hover:text-brand-primary transition shadow-xs"
+                className="text-xs text-slate-500 hover:text-slate-900 transition"
               >
                 Jobs in {city}
               </Link>

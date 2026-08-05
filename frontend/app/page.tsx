@@ -34,17 +34,13 @@ export default function Home() {
 
         {/* Section 3: Premium Promo Banners (Inspired by image 2) */}
         <section id="services" className="grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-20">
-          {/* Card A: Video Resume - Light Theme */}
-          <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50/50 text-slate-800 rounded-3xl p-8 flex flex-col justify-between min-h-[300px] relative overflow-hidden border border-slate-100 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_-8px_rgba(0,0,0,0.05)] transition-all">
-            {/* Subtle light background glows */}
-            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-blue-500/5 blur-2xl" />
-            <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/5 blur-xl" />
-
-            <div className="space-y-4 relative z-10">
-              <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-full border border-blue-100/60 inline-block">
+        {/* Card A: Video Resume */}
+          <div className="bg-white text-slate-800 rounded-xl p-8 flex flex-col justify-between min-h-[280px] border border-slate-100 hover:border-slate-200 hover:shadow-xs transition-all">
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 Exclusive Feature
-              </span>
-              <h3 className="text-2xl font-bold tracking-tight leading-snug text-slate-800">
+              </p>
+              <h3 className="text-xl font-bold tracking-tight leading-snug text-slate-900">
                 Stand out with a video profile
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed max-w-md">
@@ -52,28 +48,24 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="mt-8 flex flex-wrap gap-4 items-center relative z-10">
-              <button className="bg-brand-primary text-white hover:bg-brand-hover px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md shadow-brand-primary/10">
+            <div className="mt-8 flex flex-wrap gap-4 items-center">
+              <button className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-xs">
                 Create Video Resume
               </button>
-              <a href="#" className="text-sm font-bold text-slate-500 hover:text-brand-primary flex items-center gap-1 group/link">
+              <a href="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center gap-1 group/link">
                 <span>Learn how it works</span>
                 <ArrowRight className="h-4 w-4 group-hover/link:translate-x-0.5 transition-transform" />
               </a>
             </div>
           </div>
 
-          {/* Card B: Premium Services - Light Theme */}
-          <div className="bg-gradient-to-br from-orange-50/50 via-white to-indigo-50/30 text-slate-800 rounded-3xl p-8 flex flex-col justify-between min-h-[300px] relative overflow-hidden border border-orange-100/70 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_-8px_rgba(0,0,0,0.05)] transition-all">
-            {/* Backdrop highlights */}
-            <div className="absolute right-0 bottom-0 h-44 w-44 rounded-full bg-orange-500/5 blur-2xl" />
-            
-            <div className="space-y-4 relative z-10">
-              <div className="flex items-center gap-1.5 text-orange-600">
-                <Award className="h-4 w-4 fill-orange-100" />
-                <span className="text-xs font-extrabold uppercase tracking-widest">Top Tier Assistance</span>
-              </div>
-              <h3 className="text-2xl font-bold tracking-tight leading-snug text-slate-800">
+          {/* Card B: Premium Services */}
+          <div className="bg-white text-slate-800 rounded-xl p-8 flex flex-col justify-between min-h-[280px] border border-slate-100 hover:border-slate-200 hover:shadow-xs transition-all">
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Premium Services
+              </p>
+              <h3 className="text-xl font-bold tracking-tight leading-snug text-slate-900">
                 Accelerate search with premium resume services
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed max-w-md">
@@ -81,11 +73,11 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-4 items-center relative z-10">
-              <button className="bg-brand-secondary hover:bg-orange-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md shadow-brand-secondary/15">
+            <div className="mt-8 flex flex-wrap gap-4 items-center">
+              <button className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-xs">
                 Get Expert Review
               </button>
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                 <span>ATS Compatible Guarantee</span>
               </div>
@@ -117,36 +109,36 @@ export default function Home() {
         </section>
 
         {/* Section 6: Additional Features (Trust signals) */}
-        <section className="bg-white border border-border rounded-3xl p-8 md:p-12 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-8">
+        <section className="bg-white border border-slate-100 rounded-xl p-8 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="flex gap-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-brand-primary border border-blue-100 shrink-0">
-              <Zap className="h-6 w-6" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-slate-600 shrink-0">
+              <Zap className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">Instant Apply</h4>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              <h4 className="font-semibold text-slate-900 text-sm">Instant Apply</h4>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                 Apply to verified roles with a single click. Keep track of application progress directly in real-time.
               </p>
             </div>
           </div>
           <div className="flex gap-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
-              <ShieldCheck className="h-6 w-6" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-slate-600 shrink-0">
+              <ShieldCheck className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">100% Verified Employers</h4>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              <h4 className="font-semibold text-slate-900 text-sm">100% Verified Employers</h4>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                 Zero spam policy. Every hiring entity undergoes manual corporate verification before listing positions.
               </p>
             </div>
           </div>
           <div className="flex gap-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shrink-0">
-              <Award className="h-6 w-6" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-slate-600 shrink-0">
+              <Award className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">Detailed Comparisons</h4>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              <h4 className="font-semibold text-slate-900 text-sm">Detailed Comparisons</h4>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                 Compare job offers, insurance benefits, increments, and culture ratings side-by-side.
               </p>
             </div>

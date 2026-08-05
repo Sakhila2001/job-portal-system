@@ -109,97 +109,77 @@ const categories = [
 
 // Helper to render high-quality SVGs for each company logo
 function CompanyLogo({ name }: { name: string }) {
+  let svgContent = null;
   if (name === "Schneider Electric") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-100/60 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      </div>
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
     );
-  }
-  if (name === "JPMorgan Chase") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white border border-slate-950 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-indigo-400" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
-      </div>
+  } else if (name === "JPMorgan Chase") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
     );
-  }
-  if (name === "Coforge") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 border border-rose-100/60 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m8 3 4 8 5-5M4 15h16M8 21l8-8" />
-        </svg>
-      </div>
+  } else if (name === "Coforge") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m8 3 4 8 5-5M4 15h16M8 21l8-8" />
+      </svg>
     );
-  }
-  if (name === "Infosys") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white border border-blue-700 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m5 12 7-7 7 7M5 19l7-7 7 7" />
-        </svg>
-      </div>
+  } else if (name === "Infosys") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m5 12 7-7 7 7M5 19l7-7 7 7" />
+      </svg>
     );
-  }
-  if (name === "Energizer") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 border border-amber-100/60 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-        </svg>
-      </div>
+  } else if (name === "Energizer") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
     );
-  }
-  if (name === "TCS") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 border border-sky-100/60 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10zM2 12h20" />
-        </svg>
-      </div>
+  } else if (name === "TCS") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10zM2 12h20" />
+      </svg>
     );
-  }
-  if (name === "Google") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 border border-red-100/60 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.184 4.114-3.415 0-6.19-2.775-6.19-6.19 0-3.414 2.775-6.189 6.19-6.189 1.492 0 2.856.541 3.926 1.43l3.02-3.02C18.847 1.832 15.753.86 12.24.86c-6.16 0-11.14 4.98-11.14 11.14 0 6.161 4.98 11.14 11.14 11.14 5.928 0 10.875-4.27 10.875-10.875 0-.712-.086-1.396-.23-2.072H12.24z" />
-        </svg>
-      </div>
+  } else if (name === "Google") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.184 4.114-3.415 0-6.19-2.775-6.19-6.19 0-3.414 2.775-6.189 6.19-6.189 1.492 0 2.856.541 3.926 1.43l3.02-3.02C18.847 1.832 15.753.86 12.24.86c-6.16 0-11.14 4.98-11.14 11.14 0 6.161 4.98 11.14 11.14 11.14 5.928 0 10.875-4.27 10.875-10.875 0-.712-.086-1.396-.23-2.072H12.24z" />
+      </svg>
     );
-  }
-  if (name === "Pfizer") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 border border-indigo-100/60 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h20c0-2.31-1-4.24-2.5-5.5" />
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-        </svg>
-      </div>
+  } else if (name === "Pfizer") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h20c0-2.31-1-4.24-2.5-5.5" />
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+      </svg>
     );
-  }
-  if (name === "Toyota") {
-    return (
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 border border-slate-200 shadow-sm shrink-0">
-        <svg className="h-6 w-6 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <ellipse cx="12" cy="12" rx="10" ry="5" />
-          <ellipse cx="12" cy="12" rx="4" ry="10" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      </div>
+  } else if (name === "Toyota") {
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <ellipse cx="12" cy="12" rx="10" ry="5" />
+        <ellipse cx="12" cy="12" rx="4" ry="10" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
     );
-  }
-  // Standard Chartered & Fallback
-  return (
-    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white border border-emerald-700 shadow-sm shrink-0">
-      <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  } else {
+    // Standard Chartered & Fallback
+    svgContent = (
+      <svg className="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18" />
       </svg>
+    );
+  }
+
+  return (
+    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-50 border border-slate-100 shadow-xs shrink-0">
+      {svgContent}
     </div>
   );
 }
@@ -214,11 +194,11 @@ export default function CompanyCarousel() {
   }, [selectedCategory]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Title block */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
             Featured companies actively hiring
           </h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -227,7 +207,7 @@ export default function CompanyCarousel() {
         </div>
         <Link
           href="/jobs"
-          className="text-sm font-semibold text-brand-primary hover:text-brand-hover flex items-center gap-1 group shrink-0"
+          className="text-sm font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 group shrink-0"
         >
           <span>View all companies</span>
           <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -242,9 +222,9 @@ export default function CompanyCarousel() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`rounded-full px-4.5 py-2 text-xs font-semibold border transition-all shrink-0 cursor-pointer ${
+              className={`rounded-lg px-4.5 py-2 text-xs font-semibold border transition-all shrink-0 cursor-pointer ${
                 isActive
-                  ? "bg-slate-100 text-brand-primary border-slate-200 shadow-xs"
+                  ? "bg-slate-900 text-white border-slate-900 shadow-xs"
                   : "bg-white text-slate-500 border-slate-100 hover:text-slate-800 hover:border-slate-200"
               }`}
             >
@@ -256,29 +236,30 @@ export default function CompanyCarousel() {
       </div>
 
       {/* Grid of companies */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {filteredCompanies.map((company) => (
           <div
             key={company.name}
-            className="bg-white border border-slate-100/90 p-5 rounded-2xl flex flex-col justify-between gap-4 text-center transition-all hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] hover:border-brand-primary/25 hover:-translate-y-0.5"
+            className="bg-white border border-slate-100/90 p-5 rounded-lg flex flex-col justify-between gap-4 text-center transition-all hover:border-slate-300 hover:shadow-xs"
           >
-            <div className="space-y-3.5">
-              {/* Logo / Badge */}
+            <div className="space-y-3">
+              {/* Logo */}
               <div className="mx-auto flex justify-center">
                 <CompanyLogo name={company.name} />
               </div>
 
               <div>
-                <h3 className="font-bold text-slate-800 text-sm leading-snug line-clamp-1 group-hover:text-brand-primary">
+                <h3 className="font-semibold text-slate-800 text-sm leading-snug line-clamp-1">
                   {company.name}
                 </h3>
                 {/* Rating */}
-                <div className="flex items-center justify-center gap-1.5 mt-1 text-[11px] text-slate-400">
-                  <span className="flex items-center gap-0.5 text-amber-500 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100/50">
-                    <Star className="h-2.5 w-2.5 fill-amber-500" />
+                <div className="flex items-center justify-center gap-1.5 mt-1 text-xs text-slate-400">
+                  <span className="flex items-center gap-0.5 text-slate-700 font-medium">
+                    <Star className="h-3 w-3 fill-amber-400 text-amber-400 mr-0.5" />
                     {company.rating}
                   </span>
-                  <span className="font-semibold">{company.reviews}</span>
+                  <span>•</span>
+                  <span>{company.reviews}</span>
                 </div>
               </div>
 
@@ -290,7 +271,7 @@ export default function CompanyCarousel() {
             {/* Link button */}
             <Link
               href={`/jobs?q=${encodeURIComponent(company.name)}`}
-              className="w-full text-center text-xs font-bold bg-slate-50 text-brand-primary hover:bg-brand-primary hover:text-white py-2.5 rounded-xl transition-all"
+              className="w-full text-center text-xs font-semibold bg-slate-50 text-slate-700 hover:bg-slate-900 hover:text-white py-2 rounded-lg transition-all"
             >
               View jobs
             </Link>

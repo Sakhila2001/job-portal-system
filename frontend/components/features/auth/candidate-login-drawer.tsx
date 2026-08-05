@@ -50,22 +50,22 @@ export default function CandidateLoginDrawer({
               <Link
                 href="/register"
                 onClick={onClose}
-                className="text-sm font-semibold text-brand-primary hover:underline"
+                className="text-sm font-semibold text-slate-700 hover:text-slate-900 hover:underline"
               >
                 Register for free
               </Link>
               <button
                 onClick={onClose}
-                className="p-1.5 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 text-slate-400"
+                className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg hover:bg-slate-100 text-slate-400"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-6 pt-8">
+          <form onSubmit={onSubmit} className="space-y-5 pt-8">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Email ID / Username
               </label>
               <input
@@ -74,17 +74,17 @@ export default function CandidateLoginDrawer({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your active Email ID / Username"
-                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary placeholder-slate-400 font-medium"
+                className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 placeholder-slate-400 font-medium transition"
               />
             </div>
 
             <div className="space-y-2 relative">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                   Password
                 </label>
               </div>
-              
+
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -92,19 +92,19 @@ export default function CandidateLoginDrawer({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full bg-white border border-slate-200 rounded-xl pl-4 pr-12 py-3 text-sm focus:outline-none focus:border-brand-primary placeholder-slate-400 font-medium"
+                  className="w-full bg-white border border-slate-200 rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 placeholder-slate-400 font-medium transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-brand-primary hover:underline px-1 py-0.5"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 hover:text-slate-900 px-1 py-0.5 transition"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
 
               <div className="text-right">
-                <a href="#" className="text-xs font-semibold text-brand-primary hover:underline">
+                <a href="#" className="text-xs font-semibold text-slate-500 hover:text-slate-900 hover:underline transition">
                   Forgot Password?
                 </a>
               </div>
@@ -114,13 +114,13 @@ export default function CandidateLoginDrawer({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold py-3.5 rounded-xl shadow-md shadow-brand-primary/10 transition-all"
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold py-3 rounded-lg shadow-xs transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>
 
-            <div className="text-center pt-2">
-              <button type="button" className="text-sm font-semibold text-brand-primary hover:underline">
+            <div className="text-center pt-1">
+              <button type="button" className="text-sm font-semibold text-slate-500 hover:text-slate-900 hover:underline transition">
                 Use OTP to Login
               </button>
             </div>
@@ -140,7 +140,7 @@ export default function CandidateLoginDrawer({
           <button
             type="button"
             onClick={() => window.location.assign("http://localhost:5000/api/auth/google")}
-            className="w-full flex items-center justify-center gap-2 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-sm font-bold text-slate-700 py-3.5 rounded-xl transition-colors"
+            className="w-full flex items-center justify-center gap-2 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-sm font-semibold text-slate-700 py-3 rounded-lg transition-colors"
           >
             <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
               <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.184 4.114-3.415 0-6.19-2.775-6.19-6.19 0-3.414 2.775-6.189 6.19-6.189 1.492 0 2.856.541 3.926 1.43l3.02-3.02C18.847 1.832 15.753.86 12.24.86c-6.16 0-11.14 4.98-11.14 11.14 0 6.161 4.98 11.14 11.14 11.14 5.928 0 10.875-4.27 10.875-10.875 0-.712-.086-1.396-.23-2.072H12.24z" />
