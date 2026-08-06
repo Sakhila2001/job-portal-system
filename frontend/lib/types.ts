@@ -49,18 +49,30 @@ export interface Job {
   companyId: string;
   companyName: string;
   title: string;
+  designation?: string;
   department: string;
   employmentType: string;
   workMode: "Remote" | "Hybrid" | "On-site";
+  seniorityLevel?: string;
   location: string;
+  minExperienceMonths?: number | null;
+  maxExperienceMonths?: number | null;
   minSalary?: number | null;
   maxSalary?: number | null;
+  salaryCurrency?: string;
   salaryText?: string;
   applicantsCount: number;
   viewsCount: number;
   postedDate: string;
   expiresInDays?: number | null;
   status: "live" | "draft" | "expiring" | "closed";
+  description?: string;
+  skills?: string[];
+  qualifications?: string[];
+  benefits?: string[];
+  tags?: string[];
+  locations?: string[];
+  media?: string[];
 }
 
 export interface JobApplication {
@@ -79,6 +91,7 @@ export interface JobApplication {
   status: "applied" | "screening" | "interview" | "offer" | "rejected" | "not selected" | "hired";
   statusCustomPill?: string;
   resumeUrl?: string;
+  job?: Job;
 }
 
 export interface ModerationItem {

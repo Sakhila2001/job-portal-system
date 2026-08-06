@@ -34,7 +34,6 @@ export default function Topbar({
   onPrimaryAction,
   userAvatarText = "SA",
   notificationsCount = 2,
-  alertsCount = 0,
   notificationsList = [],
   roleTitle = "Dashboard",
 }: TopbarProps) {
@@ -121,13 +120,6 @@ export default function Topbar({
             </div>
           )}
         </div>
-
-        {/* Alerts Pill */}
-        {alertsCount > 0 && (
-          <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-mono">
-            {alertsCount} alerts
-          </span>
-        )}
 
         {/* User Avatar */}
         <div className="flex items-center gap-2 border-l border-slate-200 pl-2.5">

@@ -12,9 +12,15 @@ import {
   MOCK_TEAM_MEMBERS,
   MOCK_TASKS_AND_APPROVALS,
 } from "@/lib/mock-data/recruiter";
-import { Job, JobApplication } from "@/lib/types";
+import { Job, JobApplication, Interview, CampaignPerformance } from "@/lib/types";
 
 export function useRecruiterOverview() {
+  // Dynamic state arrays
+  const [allJobs, setAllJobs] = useState<Job[]>(MOCK_JOB_POSTINGS);
+  const [allApplicants, setAllApplicants] = useState<JobApplication[]>(MOCK_JOB_APPLICANTS);
+  const [interviews, setInterviews] = useState<Interview[]>(MOCK_RECRUITER_INTERVIEWS);
+  const [campaigns, setCampaigns] = useState<CampaignPerformance[]>(MOCK_RECRUITER_CAMPAIGNS);
+
   // ── Job Postings table state ────────────────────────────────────────────
   const [jobFilter, setJobFilter] = useState<string>("All");
   const [departmentFilter, setDepartmentFilter] = useState<string>("All");
@@ -27,19 +33,29 @@ export function useRecruiterOverview() {
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([]);
 
   // ── Applicant Pipeline state ────────────────────────────────────────────
-  /** Which job's applicants are displayed in the pipeline board */
   const [pipelineJobId, setPipelineJobId] = useState<string>(MOCK_JOB_POSTINGS[0]?.id ?? "");
-
-  // Bulk selection for applicant pipeline
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<string[]>([]);
 
   // ── Slide-over detail panels ────────────────────────────────────────────
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedApplicant, setSelectedApplicant] = useState<JobApplication | null>(null);
 
+  // ── Add Handlers ────────────────────────────────────────────────────────
+  const addJob = (newJob: Job) => {
+    setAllJobs((prev) => [newJob, ...prev]);
+  };
+
+  const addInterview = (newInterview: Interview) => {
+    setInterviews((prev) => [newInterview, ...prev]);
+  };
+
+  const addCampaign = (newCampaign: CampaignPerformance) => {
+    setCampaigns((prev) => [newCampaign, ...prev]);
+  };
+
   // ── Job Postings filtering + pagination ────────────────────────────────
   const filteredJobs = useMemo(() => {
-    return MOCK_JOB_POSTINGS.filter((job) => {
+    return allJobs.filter((job) => {
       if (jobFilter !== "All" && job.status.toLowerCase() !== jobFilter.toLowerCase()) return false;
       if (departmentFilter !== "All" && job.department !== departmentFilter) return false;
       if (searchQuery.trim()) {
@@ -48,7 +64,7 @@ export function useRecruiterOverview() {
       }
       return true;
     });
-  }, [jobFilter, departmentFilter, searchQuery]);
+  }, [allJobs, jobFilter, departmentFilter, searchQuery]);
 
   const totalPages = Math.ceil(filteredJobs.length / pageSize) || 1;
   const paginatedJobs = useMemo(() => {
@@ -112,7 +128,7 @@ export function useRecruiterOverview() {
 
     // Job postings
     jobs: paginatedJobs,
-    allJobs: MOCK_JOB_POSTINGS,
+    allJobs,
     totalJobsCount: filteredJobs.length,
     currentPage,
     totalPages,
@@ -131,9 +147,10 @@ export function useRecruiterOverview() {
     toggleJobSelection,
     toggleAllJobsOnPage,
     handleBulkJobAction,
+    addJob,
 
     // Applicant pipeline
-    allApplicants: MOCK_JOB_APPLICANTS,
+    allApplicants,
     pipelineJobId,
     handlePipelineJobChange,
     selectedApplicantIds,
@@ -142,8 +159,10 @@ export function useRecruiterOverview() {
 
     // Supporting data
     hiringAnalytics: MOCK_HIRING_ANALYTICS,
-    campaigns: MOCK_RECRUITER_CAMPAIGNS,
-    interviews: MOCK_RECRUITER_INTERVIEWS,
+    campaigns,
+    addCampaign,
+    interviews,
+    addInterview,
     teamMembers: MOCK_TEAM_MEMBERS,
     tasks: MOCK_TASKS_AND_APPROVALS,
 

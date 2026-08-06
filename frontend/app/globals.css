@@ -132,3 +132,83 @@
     backdrop-filter 0.3s ease,
     background-color 0.3s ease;
 }
+
+/* Keep dashboard actions visually consistent: muted slate instead of rainbow accents. */
+[data-dashboard="true"] button[class*="bg-blue"],
+[data-dashboard="true"] button[class*="bg-emerald"],
+[data-dashboard="true"] button[class*="bg-green"],
+[data-dashboard="true"] button[class*="bg-amber"],
+[data-dashboard="true"] button[class*="bg-yellow"],
+[data-dashboard="true"] button[class*="bg-rose"],
+[data-dashboard="true"] button[class*="bg-red"],
+[data-dashboard="true"] button[class*="bg-indigo"],
+[data-dashboard="true"] button[class*="bg-violet"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-dashboard="true"] button[class*="bg-blue"]:hover,
+[data-dashboard="true"] button[class*="bg-emerald"]:hover,
+[data-dashboard="true"] button[class*="bg-green"]:hover,
+[data-dashboard="true"] button[class*="bg-amber"]:hover,
+[data-dashboard="true"] button[class*="bg-yellow"]:hover,
+[data-dashboard="true"] button[class*="bg-rose"]:hover,
+[data-dashboard="true"] button[class*="bg-red"]:hover,
+[data-dashboard="true"] button[class*="bg-indigo"]:hover,
+[data-dashboard="true"] button[class*="bg-violet"]:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Status pills, icon accents, and inline highlights follow the same neutral system. */
+[data-dashboard="true"] [class*="bg-blue"],
+[data-dashboard="true"] [class*="bg-emerald"],
+[data-dashboard="true"] [class*="bg-green"],
+[data-dashboard="true"] [class*="bg-amber"],
+[data-dashboard="true"] [class*="bg-yellow"],
+[data-dashboard="true"] [class*="bg-orange"],
+[data-dashboard="true"] [class*="bg-rose"],
+[data-dashboard="true"] [class*="bg-red"],
+[data-dashboard="true"] [class*="bg-indigo"],
+[data-dashboard="true"] [class*="bg-violet"],
+[data-dashboard="true"] [class*="bg-purple"],
+[data-dashboard="true"] [class*="bg-pink"],
+[data-dashboard="true"] [class*="bg-cyan"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+[data-dashboard="true"] [class*="border-blue"],
+[data-dashboard="true"] [class*="border-emerald"],
+[data-dashboard="true"] [class*="border-green"],
+[data-dashboard="true"] [class*="border-amber"],
+[data-dashboard="true"] [class*="border-yellow"],
+[data-dashboard="true"] [class*="border-orange"],
+[data-dashboard="true"] [class*="border-rose"],
+[data-dashboard="true"] [class*="border-red"],
+[data-dashboard="true"] [class*="border-indigo"],
+[data-dashboard="true"] [class*="border-violet"],
+[data-dashboard="true"] [class*="border-purple"],
+[data-dashboard="true"] [class*="border-pink"],
+[data-dashboard="true"] [class*="border-cyan"] {
+  border-color: #e2e8f0 !important;
+}
+
+[data-dashboard="true"] [class*="text-blue"],
+[data-dashboard="true"] [class*="text-emerald"],
+[data-dashboard="true"] [class*="text-green"],
+[data-dashboard="true"] [class*="text-amber"],
+[data-dashboard="true"] [class*="text-yellow"],
+[data-dashboard="true"] [class*="text-orange"],
+[data-dashboard="true"] [class*="text-rose"],
+[data-dashboard="true"] [class*="text-red"],
+[data-dashboard="true"] [class*="text-indigo"],
+[data-dashboard="true"] [class*="text-violet"],
+[data-dashboard="true"] [class*="text-purple"],
+[data-dashboard="true"] [class*="text-pink"],
+[data-dashboard="true"] [class*="text-cyan"] {
+  color: #475569 !important;
+}

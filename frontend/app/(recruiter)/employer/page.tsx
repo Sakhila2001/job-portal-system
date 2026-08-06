@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import KpiCard from "@/components/shared/KpiCard";
 import JobPostingsTable from "@/components/recruiter/JobPostingsTable";
@@ -9,19 +9,20 @@ import CampaignPerformancePanel from "@/components/recruiter/CampaignPerformance
 import TeamPanel from "@/components/recruiter/TeamPanel";
 import MotionBarChart from "@/components/shared/MotionBarChart";
 import StatusBadge from "@/components/shared/StatusBadge";
+import { getRecruiterNavItems } from "@/lib/recruiter-nav";
+import { CreateJobModal, ScheduleInterviewModal } from "@/components/recruiter/RecruiterModals";
+import JobRequisitionDetailPanel from "@/components/recruiter/JobRequisitionDetailPanel";
 import { useRecruiterOverview } from "@/hooks/useRecruiterOverview";
 import {
-  LayoutGrid,
-  Briefcase,
-  Users,
-  BarChart2,
-  Settings,
-  Bell,
-  CheckSquare,
+  Plus,
   Calendar,
   Megaphone,
-  Building2,
-  Plus,
+  BarChart2,
+  Download,
+  CheckCircle2,
+  Clock,
+  Briefcase,
+  Users,
 } from "lucide-react";
 
 export default function RecruiterDashboardPage() {
@@ -48,6 +49,7 @@ export default function RecruiterDashboardPage() {
     toggleJobSelection,
     toggleAllJobsOnPage,
     handleBulkJobAction,
+    addJob,
     allApplicants,
     pipelineJobId,
     handlePipelineJobChange,
@@ -57,6 +59,7 @@ export default function RecruiterDashboardPage() {
     hiringAnalytics,
     campaigns,
     interviews,
+    addInterview,
     teamMembers,
     tasks,
     selectedJob,
@@ -65,118 +68,81 @@ export default function RecruiterDashboardPage() {
     setSelectedApplicant,
   } = useRecruiterOverview();
 
-  const navItems = [
-    { label: "Dashboard", href: "/employer", icon: LayoutGrid, isActive: true },
-    { label: "Job Postings", href: "/employer/jobs", icon: Briefcase, badge: 6 },
-    { label: "Applicants", href: "/employer/applicants", icon: Users, badge: 42 },
-    { label: "Interviews", href: "/employer/interviews", icon: Calendar },
-    { label: "Campaigns", href: "/employer/campaigns", icon: Megaphone },
-    { label: "Analytics", href: "/employer/analytics", icon: BarChart2 },
-    { label: "Company Profile", href: "/employer/company", icon: Building2 },
-    { label: "Notifications", href: "/employer/notifications", icon: Bell },
-    { label: "Tasks", href: "/employer/tasks", icon: CheckSquare, badge: tasks.length },
-    { label: "Settings", href: "/employer/settings", icon: Settings },
-  ];
+  // Modals state
+  const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
+  const [isScheduleInterviewOpen, setIsScheduleInterviewOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [toast]);
 
   // Detail panel content
   const jobDetailContent = selectedJob ? (
-    <div className="space-y-4 text-[13px]">
-      <div>
-        <span className="text-stone-400 text-[11px] uppercase tracking-wider">Role</span>
-        <h4 className="font-semibold text-stone-900 text-[16px] mt-0.5">{selectedJob.title}</h4>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <span className="text-stone-400 text-[11px]">Department</span>
-          <p className="font-medium text-stone-800 mt-0.5">{selectedJob.department}</p>
-        </div>
-        <div>
-          <span className="text-stone-400 text-[11px]">Work Mode</span>
-          <p className="font-medium text-stone-800 mt-0.5">{selectedJob.workMode}</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-3 p-3 bg-stone-50 border border-stone-200 rounded-lg font-mono text-center">
-        <div>
-          <div className="text-[10px] text-stone-400 uppercase font-sans">Applicants</div>
-          <div className="text-[18px] font-bold text-stone-900">{selectedJob.applicantsCount}</div>
-        </div>
-        <div>
-          <div className="text-[10px] text-stone-400 uppercase font-sans">Views</div>
-          <div className="text-[18px] font-bold text-stone-900">{selectedJob.viewsCount}</div>
-        </div>
-      </div>
-      <div>
-        <span className="text-stone-400 text-[11px]">Status</span>
-        <div className="mt-1">
-          <StatusBadge status={selectedJob.status} />
-        </div>
-      </div>
-      {(selectedJob.expiresInDays ?? 0) > 0 && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-[12px]">
-          ⏱ Expires in <span className="font-bold">{selectedJob.expiresInDays} days</span>
-        </div>
-      )}
-      <div className="pt-4 border-t border-stone-100 flex gap-2">
-        <button
-          onClick={() => alert(`Editing job: ${selectedJob.title}`)}
-          className="flex-1 bg-stone-900 hover:bg-stone-700 text-white font-medium py-2 rounded-lg transition text-[12px]"
-        >
-          Edit Job
-        </button>
-        <button
-          onClick={() => { alert(`Closing job: ${selectedJob.title}`); setSelectedJob(null); }}
-          className="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-medium py-2 rounded-lg transition text-[12px]"
-        >
-          Close Posting
-        </button>
-      </div>
-    </div>
+    <JobRequisitionDetailPanel
+      job={selectedJob}
+      onEdit={(j) => { setToast(`Editing "${j.title}"`); setSelectedJob(null); }}
+      onScheduleInterview={() => { setIsScheduleInterviewOpen(true); setSelectedJob(null); }}
+      onBoostCampaign={(j) => { setToast(`Launching boost campaign for "${j.title}"`); setSelectedJob(null); }}
+      onClosePosting={(j) => { setToast(`Closed posting "${j.title}"`); setSelectedJob(null); }}
+    />
   ) : selectedApplicant ? (
     <div className="space-y-4 text-[13px]">
       <div>
-        <span className="text-stone-400 text-[11px] uppercase tracking-wider">Candidate</span>
-        <h4 className="font-semibold text-stone-900 text-[16px] mt-0.5">{selectedApplicant.candidateName}</h4>
+        <span className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold">Candidate</span>
+        <h4 className="font-semibold text-slate-900 text-[16px] mt-0.5">{selectedApplicant.candidateName}</h4>
         {selectedApplicant.candidateEmail && (
           <p className="text-blue-600 font-mono text-[12px]">{selectedApplicant.candidateEmail}</p>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 p-3 bg-stone-50 border border-stone-200 rounded-lg font-mono text-center">
+      <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg font-mono text-center">
         <div>
-          <div className="text-[10px] text-stone-400 uppercase font-sans">Screen Score</div>
-          <div className="text-[18px] font-bold text-stone-900">{selectedApplicant.screeningScore ?? "—"}</div>
+          <div className="text-[10px] text-slate-400 uppercase font-sans">Screen Score</div>
+          <div className="text-[18px] font-bold text-slate-900">{selectedApplicant.screeningScore ?? "—"}</div>
         </div>
         <div>
-          <div className="text-[10px] text-stone-400 uppercase font-sans">Experience</div>
-          <div className="text-[18px] font-bold text-stone-900">
+          <div className="text-[10px] text-slate-400 uppercase font-sans">Experience</div>
+          <div className="text-[18px] font-bold text-slate-900">
             {selectedApplicant.experienceYears ? `${selectedApplicant.experienceYears}y` : "—"}
           </div>
         </div>
       </div>
       <div>
-        <span className="text-stone-400 text-[11px]">Current Stage</span>
+        <span className="text-slate-400 text-[11px]">Current Stage</span>
         <div className="mt-1">
-          <StatusBadge status={selectedApplicant.status} />
+          <StatusBadge status={selectedApplicant.status} showDot />
         </div>
       </div>
       {selectedApplicant.salaryText && (
         <div>
-          <span className="text-stone-400 text-[11px]">Expected Salary</span>
-          <p className="font-medium text-stone-800 mt-0.5 font-mono">{selectedApplicant.salaryText}</p>
+          <span className="text-slate-400 text-[11px]">Expected Salary</span>
+          <p className="font-medium text-slate-800 mt-0.5 font-mono">{selectedApplicant.salaryText}</p>
         </div>
       )}
-      <div className="pt-4 border-t border-stone-100 flex gap-2">
+      <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
         <button
-          onClick={() => alert(`Moving ${selectedApplicant.candidateName} to next stage`)}
-          className="flex-1 bg-stone-900 hover:bg-stone-700 text-white font-medium py-2 rounded-lg transition text-[12px]"
+          onClick={() => { setIsScheduleInterviewOpen(true); setSelectedApplicant(null); }}
+          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 rounded-lg transition text-[12px] flex items-center justify-center gap-1.5"
         >
-          Move to Next Stage
+          <Calendar className="h-4 w-4" /> Schedule Technical Interview
         </button>
-        <button
-          onClick={() => { alert(`Rejecting ${selectedApplicant.candidateName}`); setSelectedApplicant(null); }}
-          className="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-medium py-2 rounded-lg transition text-[12px]"
-        >
-          Reject
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setToast(`${selectedApplicant.candidateName} advanced to next stage`); setSelectedApplicant(null); }}
+            className="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold py-2 rounded-lg transition text-[12px]"
+          >
+            Advance Stage
+          </button>
+          <button
+            onClick={() => { setToast(`${selectedApplicant.candidateName} marked as rejected`); setSelectedApplicant(null); }}
+            className="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold py-2 rounded-lg transition text-[12px]"
+          >
+            Reject
+          </button>
+        </div>
       </div>
     </div>
   ) : null;
@@ -185,16 +151,16 @@ export default function RecruiterDashboardPage() {
     <DashboardShell
       brandTitle="JPS"
       brandSubtitle="Employer Dashboard"
-      navItems={navItems}
+      navItems={getRecruiterNavItems("/employer", tasks.length)}
       searchPlaceholder="Search jobs, applicants, campaigns"
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       showDateRange
       dateRangeText="Aug 2025"
       showExport
-      onExport={() => alert("Exporting Report...")}
+      onExport={() => setToast("Downloading recruiter analytics report...")}
       primaryActionLabel="Post New Job"
-      onPrimaryAction={() => alert("Open Post Job Wizard")}
+      onPrimaryAction={() => setIsCreateJobOpen(true)}
       userAvatarText="JE"
       notificationsCount={3}
       detailPanelOpen={!!selectedJob || !!selectedApplicant}
@@ -202,6 +168,26 @@ export default function RecruiterDashboardPage() {
       detailPanelTitle={selectedJob ? "Job Requisition" : "Candidate Profile"}
       detailPanelContent={jobDetailContent}
     >
+      {/* ── Toast ──────────────────────────────────────────────────────── */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white text-[13px] font-semibold px-4 py-3 rounded-lg shadow-xl flex items-center gap-2 animate-in slide-in-from-top-2 fade-in duration-200">
+          <CheckCircle2 className="h-4 w-4" /> {toast}
+        </div>
+      )}
+
+      {/* ── Modals ──────────────────────────────────────────────────────── */}
+      <CreateJobModal
+        isOpen={isCreateJobOpen}
+        onClose={() => setIsCreateJobOpen(false)}
+        onJobCreated={(job) => addJob(job)}
+      />
+
+      <ScheduleInterviewModal
+        isOpen={isScheduleInterviewOpen}
+        onClose={() => setIsScheduleInterviewOpen(false)}
+        onInterviewScheduled={(interview) => addInterview(interview)}
+      />
+
       {/* ── 4 KPI Cards ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {kpis.map((kpi, idx) => (
@@ -247,30 +233,30 @@ export default function RecruiterDashboardPage() {
           />
         </div>
         {/* Hiring funnel annotation line */}
-        <p className="text-[11px] text-stone-400 px-1 font-mono">
+        <p className="text-[11px] text-slate-400 px-1 font-mono">
           📊 Funnel: {hiringAnalytics.funnelDropoff} · Avg time to first response: {hiringAnalytics.timeToFirstResponse}
         </p>
       </div>
 
       {/* ── Plan Usage Widget ─────────────────────────────────────────────── */}
-      <div className="bg-white border border-stone-200 rounded-xl px-5 py-4 shadow-2xs">
+      <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-2xs">
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[13px] font-medium text-stone-900">
+          <div className="text-[13px] font-medium text-slate-900">
             Plan: <span className="font-bold">{planUsage.planName}</span>
           </div>
-          <span className="text-[11px] font-mono text-stone-500">
-            {planUsage.usedSlots}/{planUsage.totalSlots} slots used
+          <span className="text-[11px] font-mono text-slate-500">
+            {allJobs.length}/{planUsage.totalSlots} slots used
           </span>
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
           <div
             className="h-2 bg-slate-900 rounded-full transition-all duration-700"
-            style={{ width: `${(planUsage.usedSlots / planUsage.totalSlots) * 100}%` }}
+            style={{ width: `${Math.min((allJobs.length / planUsage.totalSlots) * 100, 100)}%` }}
           />
         </div>
-        <p className="text-[11px] text-stone-400 mt-1.5">
-          {planUsage.totalSlots - planUsage.usedSlots} slots remaining —{" "}
-          <button className="text-slate-900 hover:underline ml-1 font-semibold">Upgrade Plan</button>
+        <p className="text-[11px] text-slate-400 mt-1.5 flex items-center justify-between">
+          <span>{Math.max(planUsage.totalSlots - allJobs.length, 0)} slots remaining</span>
+          <a href="/employer/billing" className="text-slate-900 hover:underline font-semibold">Manage / Upgrade Plan →</a>
         </p>
       </div>
 
@@ -301,6 +287,7 @@ export default function RecruiterDashboardPage() {
             onToggleSelectAll={toggleAllJobsOnPage}
             onBulkAction={handleBulkJobAction}
             onViewJob={setSelectedJob}
+            onNewJob={() => setIsCreateJobOpen(true)}
           />
 
           {/* Applicant Pipeline Board — dynamic per selected job */}
@@ -314,31 +301,43 @@ export default function RecruiterDashboardPage() {
             onBulkAction={handleBulkApplicantAction}
             onViewApplicant={(app) => setSelectedApplicant(app)}
           />
-
         </div>
 
         {/* ── Right Column ───────────────────────────────────────────── */}
         <div className="lg:col-span-4 space-y-5">
 
-          {/* ① Quick Actions — moved to top */}
-          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-2xs space-y-3">
-            <h4 className="text-[13px] font-medium text-stone-900">Quick Actions</h4>
+          {/* ① Quick Actions */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs space-y-3">
+            <h4 className="text-[13px] font-bold text-slate-900">Quick Actions</h4>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: "Post New Job", icon: Plus },
-                { label: "Schedule Interview", icon: Calendar },
-                { label: "Export Applicants", icon: BarChart2 },
-                { label: "Boost Campaign", icon: Megaphone },
-              ].map(({ label, icon: Icon }) => (
-                <button
-                  key={label}
-                  onClick={() => alert(`Action: ${label}`)}
-                  className="flex items-center gap-2 p-2.5 text-[12px] font-medium text-stone-700 bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-lg transition"
-                >
-                  <Icon className="h-3.5 w-3.5 text-stone-500" />
-                  {label}
-                </button>
-              ))}
+              <button
+                onClick={() => setIsCreateJobOpen(true)}
+                className="flex items-center gap-2 p-2.5 text-[12px] font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition"
+              >
+                <Plus className="h-3.5 w-3.5 text-slate-900" />
+                Post New Job
+              </button>
+              <button
+                onClick={() => setIsScheduleInterviewOpen(true)}
+                className="flex items-center gap-2 p-2.5 text-[12px] font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition"
+              >
+                <Calendar className="h-3.5 w-3.5 text-slate-900" />
+                Schedule Round
+              </button>
+              <button
+                onClick={() => setToast("Exporting applicant CSV data...")}
+                className="flex items-center gap-2 p-2.5 text-[12px] font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition"
+              >
+                <Download className="h-3.5 w-3.5 text-slate-900" />
+                Export CSV
+              </button>
+              <a
+                href="/employer/campaigns"
+                className="flex items-center gap-2 p-2.5 text-[12px] font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition"
+              >
+                <Megaphone className="h-3.5 w-3.5 text-slate-900" />
+                Boost Campaign
+              </a>
             </div>
           </div>
 
@@ -346,18 +345,23 @@ export default function RecruiterDashboardPage() {
           <CampaignPerformancePanel campaigns={campaigns} />
 
           {/* Upcoming Interviews */}
-          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-2xs space-y-3">
-            <h4 className="text-[13px] font-medium text-stone-900 border-b border-stone-100 pb-2">
-              Upcoming Interviews
-            </h4>
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h4 className="text-[13px] font-bold text-slate-900">Upcoming Interviews</h4>
+              <button onClick={() => setIsScheduleInterviewOpen(true)} className="text-[11px] font-semibold text-blue-600 hover:underline">
+                + Schedule
+              </button>
+            </div>
             <div className="space-y-2.5">
               {interviews.map((int) => (
-                <div key={int.id} className="p-3 rounded-lg border border-stone-200/80 bg-stone-50/40 space-y-1">
-                  <div className="font-semibold text-[13px] text-stone-900">{int.candidateName}</div>
-                  <div className="text-[11px] text-stone-500">{int.jobTitle} — {int.type}</div>
-                  <div className="text-[11px] text-stone-500 font-mono flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{int.dateText}</span>
+                <div key={int.id} className="p-3 rounded-lg border border-slate-200/80 bg-slate-50/50 space-y-1">
+                  <div className="font-semibold text-[13px] text-slate-900">{int.candidateName}</div>
+                  <div className="text-[11px] text-slate-500">{int.jobTitle} — {int.type}</div>
+                  <div className="text-[11px] text-slate-500 font-mono flex items-center justify-between">
+                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{int.dateText}</span>
+                    {int.meetLink && (
+                      <a href={int.meetLink} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline font-sans font-semibold">Join Call</a>
+                    )}
                   </div>
                 </div>
               ))}
@@ -366,37 +370,6 @@ export default function RecruiterDashboardPage() {
 
           {/* Team Panel */}
           <TeamPanel members={teamMembers} />
-
-          {/* Tasks & Approvals */}
-          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-2xs space-y-3">
-            <h4 className="text-[13px] font-medium text-stone-900 border-b border-stone-100 pb-2">
-              Tasks & Approvals
-            </h4>
-            <div className="space-y-2">
-              {tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-start justify-between gap-2 p-2.5 rounded-lg border border-stone-100 bg-stone-50/50 text-[12px]"
-                >
-                  <div>
-                    <p className="font-medium text-stone-800">{task.label}</p>
-                    {task.dueDate && (
-                      <p className="text-[10px] text-stone-400 mt-0.5 font-mono">Due: {task.dueDate}</p>
-                    )}
-                  </div>
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
-                      task.completed
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : "bg-amber-50 text-amber-700 border-amber-200"
-                    }`}
-                  >
-                    {task.completed ? "Done" : "Open"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </DashboardShell>

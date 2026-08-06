@@ -60,7 +60,7 @@ export default function DashboardShell({
   children,
 }: DashboardShellProps) {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div data-dashboard="true" className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
       <div className="flex flex-1">
         {/* Left Sidebar */}
         <Sidebar

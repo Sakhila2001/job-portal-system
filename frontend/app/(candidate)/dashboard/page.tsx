@@ -5,12 +5,13 @@ import DashboardShell from "@/components/layout/DashboardShell";
 import ProfileSummaryCard from "@/components/candidate/ProfileSummaryCard";
 import KpiCard from "@/components/shared/KpiCard";
 import ApplicationPipelineTable from "@/components/candidate/ApplicationPipelineTable";
+import ApplicationDetailPanel from "@/components/candidate/ApplicationDetailPanel";
 import RecommendedJobsPanel from "@/components/candidate/RecommendedJobsPanel";
 import SkillGapPanel from "@/components/candidate/SkillGapPanel";
 import NotificationList from "@/components/shared/NotificationList";
-import StatusBadge from "@/components/shared/StatusBadge";
 import { useCandidateOverview } from "@/hooks/useCandidateOverview";
-import { Home, FileText, Bookmark, Bell, File, Building2, Star, Settings, Calendar } from "lucide-react";
+import { getCandidateNavItems } from "@/lib/candidate-nav";
+import { Calendar } from "lucide-react";
 
 export default function CandidateDashboardPage() {
   const {
@@ -35,61 +36,15 @@ export default function CandidateDashboardPage() {
     setSelectedApplication,
   } = useCandidateOverview();
 
-  // Sidebar Nav matching Wireframe 1 exactly
-  const navItems = [
-    { label: "Home", href: "/dashboard", icon: Home, isActive: true },
-    { label: "Applications", href: "/dashboard/applications", icon: FileText },
-    { label: "Saved Jobs", href: "/dashboard/saved", icon: Bookmark, badge: 2 },
-    { label: "Job Alerts", href: "/dashboard/alerts", icon: Bell },
-    { label: "Resume", href: "/dashboard/resume", icon: File },
-    { label: "Companies", href: "/dashboard/companies", icon: Building2 },
-    { label: "Reviews Written", href: "/dashboard/reviews", icon: Star },
-    { label: "Profile Settings", href: "/dashboard/settings", icon: Settings },
-  ];
-
-  // Slide-over Detail Panel Content for Candidate Application Inspector
   const detailContent = selectedApplication ? (
-    <div className="space-y-4 text-[13px]">
-      <div>
-        <span className="text-stone-400">Target Role:</span>
-        <h4 className="font-semibold text-stone-900 text-[16px] mt-0.5">{selectedApplication.jobTitle}</h4>
-      </div>
-      <div>
-        <span className="text-stone-400">Company:</span>
-        <p className="font-medium text-stone-800 text-[14px] mt-0.5">{selectedApplication.companyName}</p>
-      </div>
-      <div className="grid grid-cols-2 gap-3 p-3 bg-stone-50 border border-stone-200 rounded-lg font-mono">
-        <div>
-          <div className="text-[10px] text-stone-400 uppercase font-sans">Applied Date</div>
-          <div className="text-[13px] font-semibold text-stone-900">{selectedApplication.appliedDate}</div>
-        </div>
-        <div>
-          <div className="text-[10px] text-stone-400 uppercase font-sans">Salary</div>
-          <div className="text-[13px] font-semibold text-stone-900">{selectedApplication.salaryText}</div>
-        </div>
-      </div>
-      <div>
-        <span className="text-stone-400">Current Application Status:</span>
-        <div className="mt-1">
-          <StatusBadge status={selectedApplication.statusCustomPill || selectedApplication.status} />
-        </div>
-      </div>
-      <div className="pt-4 border-t border-stone-100 flex gap-2">
-        <button
-          onClick={() => alert(`Withdrawing application for ${selectedApplication.jobTitle}`)}
-          className="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-medium py-2 rounded-lg transition text-[12px]"
-        >
-          Withdraw Application
-        </button>
-      </div>
-    </div>
+    <ApplicationDetailPanel application={selectedApplication} onWithdraw={(application) => alert(`Withdrawing application for ${application.jobTitle}`)} />
   ) : null;
 
   return (
     <DashboardShell
       brandTitle="JPS"
       brandSubtitle="Candidate Dashboard"
-      navItems={navItems}
+      navItems={getCandidateNavItems("/dashboard")}
       searchPlaceholder="Search Jobs, Companies, Skills"
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
