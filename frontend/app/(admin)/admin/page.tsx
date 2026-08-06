@@ -11,7 +11,22 @@ import AuditActivityFeed from "@/components/admin/AuditActivityFeed";
 import CampaignPerformancePanel from "@/components/recruiter/CampaignPerformancePanel";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { useAdminOverview } from "@/hooks/useAdminOverview";
-import { LayoutGrid, Users, Briefcase, FileText, Building2, Megaphone, CreditCard, Shield, Settings, CheckCircle2, Ticket, BarChart2, Folder, Lock } from "lucide-react";
+import {
+  LayoutGrid,
+  Users,
+  Briefcase,
+  FileText,
+  Building2,
+  Megaphone,
+  CreditCard,
+  Shield,
+  Settings,
+  CheckCircle2,
+  Ticket,
+  BarChart2,
+  Folder,
+  Lock,
+} from "lucide-react";
 
 export default function AdminOverviewPage() {
   const {
@@ -47,7 +62,12 @@ export default function AdminOverviewPage() {
     { label: "Restrictions", href: "/admin/restrictions", icon: Shield },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
     { label: "Settings", href: "/admin/settings", icon: Settings, badge: 12 },
-    { label: "Verifications", href: "/admin/verifications", icon: CheckCircle2, badge: 9 },
+    {
+      label: "Verifications",
+      href: "/admin/verifications",
+      icon: CheckCircle2,
+      badge: 9,
+    },
     { label: "Support Tickets", href: "/admin/tickets", icon: Ticket },
     { label: "Reports & Analytics", href: "/admin/reports", icon: BarChart2 },
     { label: "Content & CMS", href: "/admin/cms", icon: Folder },
@@ -59,15 +79,21 @@ export default function AdminOverviewPage() {
     <div className="space-y-4 text-[13px]">
       <div>
         <span className="text-stone-400">Item Type:</span>{" "}
-        <span className="font-semibold text-stone-900">{selectedModerationItem.type}</span>
+        <span className="font-semibold text-stone-900">
+          {selectedModerationItem.type}
+        </span>
       </div>
       <div>
         <span className="text-stone-400">Target Item:</span>{" "}
-        <p className="font-medium text-stone-900 mt-0.5">{selectedModerationItem.item}</p>
+        <p className="font-medium text-stone-900 mt-0.5">
+          {selectedModerationItem.item}
+        </p>
       </div>
       <div>
         <span className="text-stone-400">Submitted By:</span>{" "}
-        <p className="font-mono text-blue-600 mt-0.5">{selectedModerationItem.submittedBy}</p>
+        <p className="font-mono text-blue-600 mt-0.5">
+          {selectedModerationItem.submittedBy}
+        </p>
       </div>
       <div>
         <span className="text-stone-400">Moderation Status:</span>
@@ -105,16 +131,22 @@ export default function AdminOverviewPage() {
     <div className="space-y-4 text-[13px]">
       <div>
         <span className="text-stone-400">Company Name:</span>{" "}
-        <h4 className="font-semibold text-stone-900 text-[15px] mt-0.5">{selectedCompanyItem.legalName}</h4>
+        <h4 className="font-semibold text-stone-900 text-[15px] mt-0.5">
+          {selectedCompanyItem.legalName}
+        </h4>
       </div>
       <div className="grid grid-cols-2 gap-3 p-3 bg-stone-50 border border-stone-200 rounded-lg text-center font-mono">
         <div>
           <div className="text-[10px] text-stone-400 uppercase">Open Jobs</div>
-          <div className="text-[16px] font-bold text-stone-900">{selectedCompanyItem.openJobsCount}</div>
+          <div className="text-[16px] font-bold text-stone-900">
+            {selectedCompanyItem.openJobsCount}
+          </div>
         </div>
         <div>
           <div className="text-[10px] text-stone-400 uppercase">Applicants</div>
-          <div className="text-[16px] font-bold text-stone-900">{selectedCompanyItem.applicantsCount}</div>
+          <div className="text-[16px] font-bold text-stone-900">
+            {selectedCompanyItem.applicantsCount}
+          </div>
         </div>
       </div>
     </div>
@@ -133,7 +165,7 @@ export default function AdminOverviewPage() {
       showExport
       onExport={() => handleAction("Export Report")}
       primaryActionLabel="New Job"
-      onPrimaryAction={() => handleAction("New Job Wizard")}
+      onPrimaryAction={() => handleAction("New Job")}
       userAvatarText="SA"
       notificationsCount={2}
       alertsCount={3}
@@ -142,7 +174,9 @@ export default function AdminOverviewPage() {
         setSelectedModerationItem(null);
         setSelectedCompanyItem(null);
       }}
-      detailPanelTitle={selectedModerationItem ? "Moderation Inspector" : "Company Profile"}
+      detailPanelTitle={
+        selectedModerationItem ? "Moderation Inspector" : "Company Profile"
+      }
       detailPanelContent={detailContent}
     >
       {/* 6 Top KPI Cards Grid */}
@@ -191,7 +225,9 @@ export default function AdminOverviewPage() {
 
           {/* Quick Actions Row */}
           <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-2xs space-y-3">
-            <h4 className="text-[13px] font-medium text-stone-900">Quick Actions</h4>
+            <h4 className="text-[13px] font-medium text-stone-900">
+              Quick Actions
+            </h4>
             <div className="flex flex-wrap items-center gap-2">
               {[
                 "Approve Jobs",
@@ -214,7 +250,9 @@ export default function AdminOverviewPage() {
 
           {/* Hiring Funnel (Last 30 Days) Row */}
           <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-2xs space-y-3">
-            <h4 className="text-[13px] font-medium text-stone-900">Hiring Funnel (Last 30 Days)</h4>
+            <h4 className="text-[13px] font-medium text-stone-900">
+              Hiring Funnel (Last 30 Days)
+            </h4>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 font-mono">
               {hiringFunnel.map((step) => (
                 <div
@@ -225,8 +263,12 @@ export default function AdminOverviewPage() {
                       : "bg-stone-50 border-stone-200 text-stone-800"
                   }`}
                 >
-                  <div className="text-[10px] text-stone-500 font-sans uppercase">{step.stage}</div>
-                  <div className="text-[16px] font-bold mt-0.5">{step.count.toLocaleString()}</div>
+                  <div className="text-[10px] text-stone-500 font-sans uppercase">
+                    {step.stage}
+                  </div>
+                  <div className="text-[16px] font-bold mt-0.5">
+                    {step.count.toLocaleString()}
+                  </div>
                 </div>
               ))}
             </div>
@@ -246,9 +288,14 @@ export default function AdminOverviewPage() {
             </h4>
             <div className="space-y-2 text-[12px]">
               {systemHealth.map((sh) => (
-                <div key={sh.metric} className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-100 font-mono">
+                <div
+                  key={sh.metric}
+                  className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-100 font-mono"
+                >
                   <span className="text-stone-600 font-sans">{sh.metric}</span>
-                  <span className="font-semibold text-stone-900">{sh.value}</span>
+                  <span className="font-semibold text-stone-900">
+                    {sh.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -261,7 +308,10 @@ export default function AdminOverviewPage() {
             </h4>
             <div className="space-y-2 text-[12px]">
               {pendingVerifications.map((pv) => (
-                <div key={pv.label} className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-100">
+                <div
+                  key={pv.label}
+                  className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-100"
+                >
                   <span className="text-stone-700">{pv.label}</span>
                   <span className="font-mono font-semibold text-stone-900 bg-white px-2 py-0.5 rounded border border-stone-200">
                     {pv.count}

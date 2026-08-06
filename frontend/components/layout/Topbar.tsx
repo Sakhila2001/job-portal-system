@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { Search, Bell, Download, Plus, Calendar, Mail } from "lucide-react";
+import React, { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Search, Bell, Download, Plus, Calendar, Mail, LogOut } from "lucide-react";
 import NotificationList from "../shared/NotificationList";
 import { AppNotification } from "@/lib/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TopbarProps {
   searchPlaceholder?: string;
@@ -38,6 +40,13 @@ export default function Topbar({
   roleTitle = "Dashboard",
 }: TopbarProps) {
   const [showNotificationsPopover, setShowNotificationsPopover] = useState(false);
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    router.push("/");
+  }, [logout, router]);
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-2xs">
@@ -121,11 +130,19 @@ export default function Topbar({
           )}
         </div>
 
-        {/* User Avatar */}
+        {/* User Avatar + Logout */}
         <div className="flex items-center gap-2 border-l border-slate-200 pl-2.5">
           <div className="h-8 w-8 rounded-full bg-slate-900 text-white text-[12px] font-semibold flex items-center justify-center shadow-xs font-mono">
             {userAvatarText}
           </div>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-[12px] font-semibold px-2.5 py-1.5 rounded-lg transition border border-slate-200"
+            title="Logout"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
         </div>
       </div>
     </header>

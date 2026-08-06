@@ -149,7 +149,7 @@ export default function CandidateSettingsPage() {
           <div>
             <h1 className="text-[20px] font-bold text-slate-900 tracking-tight">Candidate Profile & Settings</h1>
             <p className="text-[13px] text-slate-500 mt-0.5">
-              Review your candidate profile data or launch the animated multi-step profile editor wizard
+              Review your candidate profile data or launch the animated multi-step profile editor
             </p>
           </div>
           <button
@@ -157,7 +157,7 @@ export default function CandidateSettingsPage() {
             onClick={() => { setCurrentStep(1); setIsWizardOpen(true); }}
             className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-[12px] font-semibold px-4 py-2.5 rounded-lg transition shadow-xs shrink-0"
           >
-            <Edit3 className="h-4 w-4" /> Edit Profile (Wizard)
+            <Edit3 className="h-4 w-4" /> Edit Profile
           </button>
         </div>
 
@@ -377,7 +377,7 @@ export default function CandidateSettingsPage() {
             <div>
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <h3 className="text-[18px] font-bold text-slate-900">Edit Candidate Profile Wizard</h3>
+                  <h3 className="text-[18px] font-bold text-slate-900">Edit Candidate Profile</h3>
                   <p className="text-[12px] text-slate-500">Step {currentStep} of {totalSteps} — {WIZARD_STEPS[currentStep - 1]?.label}</p>
                 </div>
                 <button type="button" onClick={() => setIsWizardOpen(false)} className="text-slate-400 hover:text-slate-900 p-1"><X className="h-5 w-5" /></button>

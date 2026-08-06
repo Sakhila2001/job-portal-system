@@ -5,6 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "tsx app.ts",
+    "seed": "tsx src/seeds/run-seed.ts",
     "test": "ts-node-dev app.ts"
   },
   "keywords": [],

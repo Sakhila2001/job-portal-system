@@ -3,10 +3,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, Briefcase } from "lucide-react";
+import { Menu, X, Briefcase, LogOut, Shield } from "lucide-react";
 import MegaMenu from "@/components/ui/mega-menu";
 import CandidateLoginDrawer from "@/components/features/auth/candidate-login-drawer";
 import EmployerAuthDrawer from "@/components/features/auth/employer-auth-drawer";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MegaMenuColumn {
   title: string;
@@ -23,6 +24,7 @@ interface MegaMenuData {
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isAuthenticated, login, logout } = useAuth();
 
   // Mobile menu open/close
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,12 +33,11 @@ export default function Header() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Candidate Login Drawer state
+  // Candidate login drawer state
   const [isLoginDrawerOpen, setIsLoginDrawerOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const accessTokenRef = useRef<string | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -44,7 +45,7 @@ export default function Header() {
   const [isEmployerDrawerOpen, setIsEmployerDrawerOpen] = useState(false);
   const [employerActiveTab, setEmployerActiveTab] = useState<"login" | "register">("login");
   const [showEmployerPassword, setShowEmployerPassword] = useState(false);
-  
+
   // Employer inputs
   const [employerEmail, setEmployerEmail] = useState("");
   const [employerPassword, setEmployerPassword] = useState("");
@@ -95,7 +96,6 @@ export default function Header() {
       .then(async (response) => {
         if (!response.ok) throw new Error("Google sign-in session could not be started.");
         const data = await response.json() as { accessToken: string };
-        accessTokenRef.current = data.accessToken;
         window.history.replaceState({}, "", "/");
       })
       .catch(() => setLoginError("Google sign-in completed, but the session could not be restored."));
@@ -110,24 +110,47 @@ export default function Header() {
     }
   };
 
+  const redirectBasedOnRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        router.push("/admin");
+        break;
+      case "candidate":
+        router.push("/dashboard");
+        break;
+      case "employer":
+      case "recruiter":
+        router.push("/employer");
+        break;
+      default:
+        router.push("/");
+    }
+  };
+
+  const dashboardHref = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "/admin";
+      case "candidate":
+        return "/dashboard";
+      case "employer":
+      case "recruiter":
+        return "/employer";
+      default:
+        return "/";
+    }
+  };
+
   const handleCandidateLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
     setIsLoggingIn(true);
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json() as { accessToken?: string; message?: string };
-      if (!response.ok || !data.accessToken) throw new Error(data.message || "Login failed.");
-
-      accessTokenRef.current = data.accessToken;
+      const { user: userData, accessToken } = await login(email, password, "candidate");
       setIsLoginDrawerOpen(false);
       setEmail("");
       setPassword("");
+      redirectBasedOnRole(userData.role);
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : "Login failed.");
     } finally {
@@ -139,10 +162,15 @@ export default function Header() {
     e.preventDefault();
     setEmployerRegistrationError(null);
     if (employerActiveTab === "login") {
-      alert(`Employer Logged in: ${employerEmail}`);
-      setIsEmployerDrawerOpen(false);
-      setEmployerEmail("");
-      setEmployerPassword("");
+      try {
+        const { user: userData } = await login(employerEmail, employerPassword, "employer");
+        setIsEmployerDrawerOpen(false);
+        setEmployerEmail("");
+        setEmployerPassword("");
+        redirectBasedOnRole(userData.role);
+      } catch (error) {
+        setEmployerRegistrationError(error instanceof Error ? error.message : "Login failed.");
+      }
     } else {
       if (employerPassword !== confirmEmployerPassword) {
         setEmployerRegistrationError("Passwords do not match.");
@@ -203,6 +231,11 @@ export default function Header() {
     } finally {
       setIsResendingEmployerVerification(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
   };
 
   const megaMenus: MegaMenuData[] = [
@@ -277,10 +310,9 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          
+
           {/* Logo and Nav links */}
           <div className="flex items-center gap-10">
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-900 shrink-0">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white shadow-xs">
                 <Briefcase className="h-4.5 w-4.5" />
@@ -290,7 +322,6 @@ export default function Header() {
               </span>
             </Link>
 
-            {/* Desktop Nav Links with Hover Mega Dropdown */}
             <nav className="hidden md:flex items-center gap-8 h-16">
               {megaMenus.map((menu) => {
                 const isActive = activeMenu === menu.key;
@@ -312,7 +343,6 @@ export default function Header() {
                       {menu.title}
                     </Link>
 
-                    {/* Mega Menu Dropdown */}
                     <MegaMenu
                       menuKey={menu.key}
                       href={menu.href}
@@ -326,56 +356,95 @@ export default function Header() {
             </nav>
           </div>
 
-          {/* Right Action buttons (Removed Bell and Find Jobs links) */}
+          {/* Right Action buttons */}
           <div className="hidden md:flex items-center gap-4">
-            
-            {/* For Employers Action button */}
-            <button
-              onClick={() => {
-                setEmployerActiveTab("login");
-                setIsEmployerDrawerOpen(true);
-              }}
-              className="text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
-            >
-              For employers
-            </button>
+            {isAuthenticated && user ? (
+              <>
+                <Link
+                  href={dashboardHref(user.role)}
+                  className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all flex items-center gap-1.5"
+                >
+                  Dashboard
+                </Link>
+                <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                  <Shield className="h-4 w-4" />
+                  {user.role}
+                </span>
+                <span className="text-sm text-slate-500">{user.email}</span>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all flex items-center gap-1.5"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setEmployerActiveTab("login");
+                    setIsEmployerDrawerOpen(true);
+                  }}
+                  className="text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
+                >
+                  For employers
+                </button>
 
-            <div className="h-4 w-px bg-slate-200" />
+                <button
+                  onClick={() => setIsLoginDrawerOpen(true)}
+                  className="text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-4 py-2 rounded-lg transition-all"
+                >
+                  Login
+                </button>
 
-            {/* Candidate Login */}
-            <button
-              onClick={() => setIsLoginDrawerOpen(true)}
-              className="text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-4 py-2 rounded-lg transition-all"
-            >
-              Login
-            </button>
-            
-            {/* Candidate Register Page navigation */}
-            <Link
-              href="/register"
-              className="text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg shadow-xs transition-all block text-center"
-            >
-              Register
-            </Link>
+                <Link
+                  href="/register"
+                  className="text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg shadow-xs transition-all block text-center"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu trigger */}
           <div className="flex md:hidden items-center gap-3">
-            <button
-              onClick={() => {
-                setEmployerActiveTab("login");
-                setIsEmployerDrawerOpen(true);
-              }}
-              className="text-xs font-semibold text-slate-600 hover:text-brand-primary border border-slate-200 px-2.5 py-1.5 rounded-lg transition-colors"
-            >
-              Employers
-            </button>
-            <button
-              onClick={() => setIsLoginDrawerOpen(true)}
-              className="text-xs font-bold text-brand-primary border border-brand-primary/20 px-2.5 py-1.5 rounded-lg"
-            >
-              Login
-            </button>
+            {isAuthenticated && user ? (
+              <>
+                <Link
+                  href={dashboardHref(user.role)}
+                  className="text-xs font-semibold text-slate-600 hover:text-brand-primary border border-slate-200 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs font-semibold text-slate-600 hover:text-brand-primary border border-slate-200 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setEmployerActiveTab("login");
+                    setIsEmployerDrawerOpen(true);
+                  }}
+                  className="text-xs font-semibold text-slate-600 hover:text-brand-primary border border-slate-200 px-2.5 py-1.5 rounded-lg transition-colors"
+                >
+                  Employers
+                </button>
+                <button
+                  onClick={() => setIsLoginDrawerOpen(true)}
+                  className="text-xs font-bold text-brand-primary border border-brand-primary/20 px-2.5 py-1.5 rounded-lg"
+                >
+                  Login
+                </button>
+              </>
+            )}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="inline-flex items-center justify-center rounded-xl p-1.5 text-muted-foreground hover:bg-muted hover:text-brand-primary"
@@ -414,22 +483,46 @@ export default function Header() {
               ))}
             </nav>
             <div className="flex flex-col gap-2 pt-4">
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsLoginDrawerOpen(true);
-                }}
-                className="w-full text-center text-sm font-semibold text-brand-primary py-2.5 rounded-xl border border-brand-primary/25 hover:bg-brand-light"
-              >
-                Candidate Login
-              </button>
-              <Link
-                href="/register"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full text-center text-sm font-semibold bg-brand-secondary text-white py-2.5 rounded-xl hover:bg-orange-600 block"
-              >
-                Candidate Register
-              </Link>
+              {isAuthenticated && user ? (
+                <>
+                  <Link
+                    href={dashboardHref(user.role)}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full text-center text-sm font-semibold text-slate-700 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-center gap-2"
+                  >
+                    Dashboard ({user.role})
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full text-center text-sm font-semibold text-slate-700 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout ({user.role})
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsLoginDrawerOpen(true);
+                    }}
+                    className="w-full text-center text-sm font-semibold text-brand-primary py-2.5 rounded-xl border border-brand-primary/25 hover:bg-brand-light"
+                  >
+                    Candidate Login
+                  </button>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full text-center text-sm font-semibold bg-brand-secondary text-white py-2.5 rounded-xl hover:bg-orange-600 block"
+                  >
+                    Candidate Register
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

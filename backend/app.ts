@@ -6,6 +6,7 @@ import registerRoutes from "./src/modules/auth/register/register.route.js";
 import verifyRoutes from "./src/modules/auth/verify/verify.route.js";
 import googleAuthRoutes from "./src/modules/auth/google/google.route.js";
 import loginRoutes from "./src/modules/auth/login/login.route.js";
+import seedRoutes from "./src/modules/auth/seed/seed.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,6 +28,7 @@ app.use("/api/auth/register", registerRoutes);
 app.use("/api/auth", verifyRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use("/api/auth", loginRoutes);
+app.use("/api/auth/seed", seedRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ message: "Not Found" });
