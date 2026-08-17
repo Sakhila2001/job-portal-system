@@ -24,7 +24,7 @@ interface MegaMenuData {
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthenticated, login, logout } = useAuth();
+  const { user, isAuthenticated, login, logout, clearTokens } = useAuth();
 
   // Mobile menu open/close
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -164,6 +164,16 @@ export default function Header() {
     if (employerActiveTab === "login") {
       try {
         const { user: userData } = await login(employerEmail, employerPassword, "employer");
+
+        // Only allow users with employer or recruiter role to access the Employer Portal
+        if ((userData.role as string) !== "employer" && userData.role !== "recruiter") {
+          clearTokens();
+          setEmployerRegistrationError(
+            "Access denied. This portal is for employers only. Please use the candidate login instead."
+          );
+          return;
+        }
+
         setIsEmployerDrawerOpen(false);
         setEmployerEmail("");
         setEmployerPassword("");

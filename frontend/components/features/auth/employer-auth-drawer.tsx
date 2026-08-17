@@ -172,6 +172,10 @@ export default function EmployerAuthDrawer({
                 </div>
               </div>
 
+              {registrationError && (
+                <p className="text-xs font-medium text-red-600">{registrationError}</p>
+              )}
+
               <button
                 type="submit"
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold py-3 rounded-lg transition-all shadow-xs"

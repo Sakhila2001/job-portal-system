@@ -177,3 +177,143 @@ export interface PaginationState {
   pageSize: number;
   totalItems: number;
 }
+
+export interface ApplicationTimelineStep {
+  stage: "applied" | "screening" | "interview" | "offer" | "hired" | "rejected";
+  label: string;
+  date?: string;
+  note?: string;
+  active: boolean;
+  completed: boolean;
+}
+
+export interface InterviewDetail {
+  id: string;
+  applicationId: string;
+  companyName: string;
+  jobTitle: string;
+  round: string;
+  date: string;
+  time: string;
+  meetLink?: string;
+  interviewerName?: string;
+  interviewerRole?: string;
+  prepNotes?: string;
+  reminderSet: boolean;
+  status: "upcoming" | "completed" | "cancelled";
+}
+
+export interface JobMatchDetail {
+  jobId: string;
+  jobTitle: string;
+  companyName: string;
+  overallMatch: number;
+  matchedSkills: string[];
+  missingSkills: string[];
+  salaryMatch: { candidate: number; jobMin: number; jobMax: number; match: boolean };
+  locationMatch: boolean;
+  experienceMatch: boolean;
+  experienceNote: string;
+}
+
+export interface SkillSuggestion {
+  skill: string;
+  reason: string;
+  priority: "high" | "medium" | "low";
+  learnUrl?: string;
+}
+
+export interface ResumeVersion {
+  id: string;
+  label: string;
+  fileName: string;
+  targetRole: string;
+  uploadedDate: string;
+  isDefault: boolean;
+  size: string;
+}
+
+export interface CoverLetter {
+  id: string;
+  jobTitle: string;
+  companyName: string;
+  createdDate: string;
+  content: string;
+  applicationId?: string;
+}
+
+export interface SavedJobCollection {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  jobs: Array<{ id: string; title: string; company: string; location: string; salaryText: string; expiresIn?: string }>;
+}
+
+export interface ApplicationNote {
+  applicationId: string;
+  recruiterName?: string;
+  interviewFeedback?: string;
+  followUpDate?: string;
+  salaryDiscussion?: string;
+  privateNotes?: string;
+  lastUpdated: string;
+}
+
+export interface FollowUpReminder {
+  applicationId: string;
+  jobTitle: string;
+  companyName: string;
+  appliedDate: string;
+  daysSince: number;
+  status: string;
+  suggestedAction: string;
+}
+
+export interface ProfileViewStat {
+  week: string;
+  views: number;
+}
+
+export interface ProfileAnalytics {
+  totalViews: number;
+  viewsThisWeek: number;
+  searchAppearances: number;
+  profileStrength: number;
+  topSkillsFound: string[];
+  recentViewers: Array<{ company: string; role: string; timeAgo: string }>;
+  weeklyViews: ProfileViewStat[];
+}
+
+export interface QuickApplyJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  workMode: "Remote" | "Hybrid" | "On-site";
+  salaryText: string;
+  matchPercentage: number;
+  tags: string[];
+  postedAgo: string;
+}
+
+export interface Message {
+  id: string;
+  senderId: string; // "recruiter" | candidate id
+  senderName: string;
+  text: string;
+  timestamp: string;
+  isRead: boolean;
+}
+
+export interface MessageThread {
+  id: string;
+  candidateName: string;
+  candidateInitials: string;
+  jobTitle: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+  messages: Message[];
+  isArchived: boolean;
+}

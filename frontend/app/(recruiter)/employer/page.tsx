@@ -9,6 +9,7 @@ import CampaignPerformancePanel from "@/components/recruiter/CampaignPerformance
 import TeamPanel from "@/components/recruiter/TeamPanel";
 import MotionBarChart from "@/components/shared/MotionBarChart";
 import StatusBadge from "@/components/shared/StatusBadge";
+import RecruiterMessages from "@/components/recruiter/RecruiterMessages";
 import { getRecruiterNavItems } from "@/lib/recruiter-nav";
 import { CreateJobModal, ScheduleInterviewModal } from "@/components/recruiter/RecruiterModals";
 import JobRequisitionDetailPanel from "@/components/recruiter/JobRequisitionDetailPanel";
@@ -66,6 +67,9 @@ export default function RecruiterDashboardPage() {
     setSelectedJob,
     selectedApplicant,
     setSelectedApplicant,
+    messageThreads,
+    setMessageThreads,
+    totalUnreadMessages,
   } = useRecruiterOverview();
 
   // Modals state
@@ -151,7 +155,7 @@ export default function RecruiterDashboardPage() {
     <DashboardShell
       brandTitle="JPS"
       brandSubtitle="Employer Dashboard"
-      navItems={getRecruiterNavItems("/employer", tasks.length)}
+      navItems={getRecruiterNavItems("/employer", tasks.length, totalUnreadMessages)}
       searchPlaceholder="Search jobs, applicants, campaigns"
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
@@ -370,6 +374,12 @@ export default function RecruiterDashboardPage() {
 
           {/* Team Panel */}
           <TeamPanel members={teamMembers} />
+
+          {/* Messages Inbox */}
+          <RecruiterMessages
+            threads={messageThreads}
+            onThreadsChange={setMessageThreads}
+          />
         </div>
       </div>
     </DashboardShell>

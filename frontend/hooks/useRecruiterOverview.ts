@@ -11,8 +11,9 @@ import {
   MOCK_RECRUITER_INTERVIEWS,
   MOCK_TEAM_MEMBERS,
   MOCK_TASKS_AND_APPROVALS,
+  MOCK_MESSAGE_THREADS,
 } from "@/lib/mock-data/recruiter";
-import { Job, JobApplication, Interview, CampaignPerformance } from "@/lib/types";
+import { Job, JobApplication, Interview, CampaignPerformance, MessageThread } from "@/lib/types";
 
 export function useRecruiterOverview() {
   // Dynamic state arrays
@@ -20,6 +21,7 @@ export function useRecruiterOverview() {
   const [allApplicants, setAllApplicants] = useState<JobApplication[]>(MOCK_JOB_APPLICANTS);
   const [interviews, setInterviews] = useState<Interview[]>(MOCK_RECRUITER_INTERVIEWS);
   const [campaigns, setCampaigns] = useState<CampaignPerformance[]>(MOCK_RECRUITER_CAMPAIGNS);
+  const [messageThreads, setMessageThreads] = useState<MessageThread[]>(MOCK_MESSAGE_THREADS);
 
   // ── Job Postings table state ────────────────────────────────────────────
   const [jobFilter, setJobFilter] = useState<string>("All");
@@ -165,6 +167,11 @@ export function useRecruiterOverview() {
     addInterview,
     teamMembers: MOCK_TEAM_MEMBERS,
     tasks: MOCK_TASKS_AND_APPROVALS,
+
+    // Messages inbox
+    messageThreads,
+    setMessageThreads,
+    totalUnreadMessages: messageThreads.reduce((s, t) => s + t.unreadCount, 0),
 
     // Slide-over detail panels
     selectedJob,
