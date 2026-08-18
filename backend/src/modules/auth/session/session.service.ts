@@ -2,9 +2,9 @@ import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import prisma from "../../../lib/prisma.js";
 
-const accessTokenLifetime = "15m";
-const refreshTokenLifetime = "7d";
-const refreshTokenMaxAge = 7 * 24 * 60 * 60 * 1000;
+const accessTokenLifetime = "2d";
+const refreshTokenLifetime = "30d";
+const refreshTokenMaxAge = 30 * 24 * 60 * 60 * 1000;
 
 type TokenPayload = { userId: string; role: string; sessionId?: string; type: "access" | "refresh" };
 
@@ -28,6 +28,12 @@ export const refreshCookieOptions = {
 
 export function createAccessToken(userId: string, role: string) {
   return jwt.sign({ userId, role, type: "access" }, jwtSecret(), { expiresIn: accessTokenLifetime });
+}
+
+export function verifyAccessToken(token: string) {
+  const payload = jwt.verify(token, jwtSecret()) as TokenPayload;
+  if (payload.type !== "access") throw new Error("Invalid access token.");
+  return { userId: payload.userId, role: payload.role };
 }
 
 export async function createRefreshSession(userId: string, role: string) {

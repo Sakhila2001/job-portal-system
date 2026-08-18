@@ -1,3 +1,4 @@
+import "dotenv/config";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma.js";
 
@@ -29,6 +30,23 @@ async function seedAdmin() {
 
   console.log(`[seed] Admin user created: ${admin.email} (role: ${admin.role})`);
   return admin;
+}
+
+// Standalone execution support
+if (process.argv[1]?.includes("admin.seeder")) {
+  console.log(`[seed] Running admin seeder (${ADMIN_EMAIL})...`);
+  seedAdmin()
+    .then((admin) => {
+      console.log(`[seed] Admin ready: ${admin.email} (role: ${admin.role})`);
+      console.log(`[seed] Credentials -> email: ${ADMIN_EMAIL}, password: ${ADMIN_PASSWORD}`);
+    })
+    .catch((error) => {
+      console.error("[seed] Admin seeder failed:", error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
 }
 
 export { seedAdmin, ADMIN_EMAIL, ADMIN_PASSWORD };

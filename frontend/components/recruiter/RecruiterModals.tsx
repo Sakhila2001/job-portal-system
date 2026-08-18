@@ -182,6 +182,32 @@ export function CreateJobModal({ isOpen, onClose, onJobCreated }: CreateJobModal
   };
 
   const handlePublish = () => {
+    // API-compliant backend payload
+    const payload = {
+      title,
+      designation,
+      department,
+      employmentType,
+      workMode,
+      seniorityLevel,
+      description: description || "Exciting opportunity to build scalable products.",
+      minExperienceMonths: parseInt(minExpMonths) || 0,
+      maxExperienceMonths: parseInt(maxExpMonths) || 0,
+      salaryMin: parseInt(minSalary) || 0,
+      salaryMax: parseInt(maxSalary) || 0,
+      salaryCurrency,
+      showSalary,
+      location: locations[0] || "Kathmandu, Nepal",
+      locations,
+      expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
+      status: status === "published" ? "published" : "draft",
+      skills,
+      qualifications,
+      benefits,
+      tags,
+      media: mediaUrls.map((url) => ({ mediaType: "image", mediaUrl: url })),
+    };
+
     const newJob = {
       id: `job-${Date.now()}`,
       companyId: "comp-1",
@@ -198,20 +224,23 @@ export function CreateJobModal({ isOpen, onClose, onJobCreated }: CreateJobModal
       minSalary: parseInt(minSalary) || 0,
       maxSalary: parseInt(maxSalary) || 0,
       salaryCurrency,
-      salaryText: `${salaryCurrency} ${(parseInt(minSalary)/100000).toFixed(1)}L – ${(parseInt(maxSalary)/100000).toFixed(1)}L / year`,
+      showSalary,
+      salaryText: `${salaryCurrency} ${(parseInt(minSalary) / 100000).toFixed(1)}L – ${(parseInt(maxSalary) / 100000).toFixed(1)}L / year`,
       applicantsCount: 0,
       viewsCount: 0,
       postedDate: "Just now",
       expiresInDays: expiresAt ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86400000) : 30,
-      status: status === "published" ? "live" as const : "draft" as const,
+      status: status === "published" ? ("live" as const) : ("draft" as const),
       description: description || "Exciting opportunity to build scalable products.",
-      skills: skills.map(s => s.name),
-      qualifications: qualifications.map(q => q.name),
+      skills: skills.map((s) => s.name),
+      qualifications: qualifications.map((q) => q.name),
       benefits,
       tags,
       locations,
       media: mediaUrls,
+      payload, // Included for API submission reference
     };
+
     setSubmitted(true);
     setTimeout(() => {
       onJobCreated(newJob);

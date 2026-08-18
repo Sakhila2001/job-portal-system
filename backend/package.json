@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "tsx app.ts",
     "seed": "tsx src/seeds/run-seed.ts",
+    "seed:admin": "tsx src/seeds/admin.seeder.ts",
+    "seed:department": "tsx src/seeds/department.seeder.ts",
+    "seed:designation": "tsx src/seeds/designation.seeder.ts",
     "test": "ts-node-dev app.ts"
   },
   "keywords": [],
@@ -26,6 +29,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "next-cloudinary": "^6.18.8",
     "nodemailer": "^9.0.3",
     "zod": "^4.4.3"
   },

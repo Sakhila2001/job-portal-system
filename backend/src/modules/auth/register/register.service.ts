@@ -7,10 +7,10 @@ import {
   createCompany,
   createEmployerAccount,
   hashPassword,
-  generateTokens,
 } from "./register.repository.js";
 import { sendEmail } from "../../../lib/email.js";
 import prisma from "../../../lib/prisma.js";
+import { createAccessToken, createRefreshSession } from "../session/session.service.js";
 
 const candidateSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -187,7 +187,7 @@ export async function registerCandidate(data: CandidateRegisterDto) {
   sendVerificationEmail(user.email, firstName, token).catch((err) => console.error("[email] candidate verification failed:", err));
   sendWelcomeEmail(user.email, firstName).catch((err) => console.error("[email] candidate welcome failed:", err));
 
-  const tokens = generateTokens(user.id, user.role);
+  const refreshToken = await createRefreshSession(user.id, user.role);
 
   return {
     user: {
@@ -196,7 +196,8 @@ export async function registerCandidate(data: CandidateRegisterDto) {
       role: user.role,
       emailVerified: false,
     },
-    ...tokens,
+    accessToken: createAccessToken(user.id, user.role),
+    refreshToken,
   };
 }
 
@@ -247,7 +248,7 @@ export async function registerEmployer(data: EmployerRegisterDto) {
   sendVerificationEmail(user.email, data.companyName, token).catch((err) => console.error("[email] employer verification failed:", err));
   sendWelcomeEmail(user.email, data.companyName).catch((err) => console.error("[email] employer welcome failed:", err));
 
-  const tokens = generateTokens(user.id, user.role);
+  const refreshToken = await createRefreshSession(user.id, user.role);
 
   return {
     user: {
@@ -258,6 +259,7 @@ export async function registerEmployer(data: EmployerRegisterDto) {
       companyName: company.displayName,
       emailVerified: false,
     },
-    ...tokens,
+    accessToken: createAccessToken(user.id, user.role),
+    refreshToken,
   };
 }

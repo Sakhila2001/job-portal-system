@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import prisma from "../../../lib/prisma.js";
 
 export async function findUserByEmail(email: string) {
@@ -49,22 +48,6 @@ export async function createEmployerAccount(data: {
   return prisma.employerAccount.create({
     data,
   });
-}
-
-export function generateTokens(userId: string, role: string) {
-  const accessToken = jwt.sign(
-    { userId, role },
-    process.env.JWT_SECRET || "super-secret-jwt-key",
-    { expiresIn: "1h" }
-  );
-
-  const refreshToken = jwt.sign(
-    { userId, role },
-    process.env.JWT_SECRET || "super-secret-jwt-key",
-    { expiresIn: "7d" }
-  );
-
-  return { accessToken, refreshToken };
 }
 
 export function hashPassword(password: string): string {

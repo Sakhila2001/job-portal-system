@@ -99,20 +99,22 @@ export async function completeGoogleSignIn(req: Request, res: Response) {
       throw new Error("Google did not provide a verified email address.");
     }
 
-    let user = await prisma.user.findUnique({ where: { email: profile.email } });
+    const email = profile.email;
+    let user = await prisma.user.findUnique({ where: { email } });
     if (user) {
       user = await prisma.user.update({
         where: { id: user.id },
         data: { emailVerified: true, verificationToken: null, verificationExpires: null, lastLoginAt: new Date() },
       });
     } else {
-      const nameParts = (profile.name || profile.email.split("@")[0]).trim().split(/\s+/);
+      const fallbackName = email.split("@")[0] ?? "Google";
+      const nameParts = (profile.name || fallbackName).trim().split(/\s+/);
       const firstName = profile.given_name || nameParts[0] || "Google";
       const lastName = profile.family_name || nameParts.slice(1).join(" ");
 
       user = await prisma.user.create({
         data: {
-          email: profile.email,
+          email,
           passwordHash: hashPassword(crypto.randomBytes(32).toString("hex")),
           role: "candidate",
           emailVerified: true,
