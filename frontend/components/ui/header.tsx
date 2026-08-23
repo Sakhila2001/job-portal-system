@@ -25,6 +25,11 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, login, logout, clearTokens } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Mobile menu open/close
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -92,7 +97,7 @@ export default function Header() {
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("googleSignIn") !== "success") return;
 
-    fetch("http://localhost:5000/api/auth/refresh", { method: "POST", credentials: "include" })
+    fetch("/api/auth/refresh", { method: "POST", credentials: "include" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Google sign-in session could not be started.");
         const data = await response.json() as { accessToken: string };
@@ -189,7 +194,7 @@ export default function Header() {
 
       setIsEmployerRegistrationLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/auth/register/employer", {
+        const response = await fetch("/api/auth/register/employer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -222,7 +227,7 @@ export default function Header() {
     setIsResendingEmployerVerification(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/resend-verification", {
+      const response = await fetch("/api/auth/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: employerEmail, name: hrName }),
@@ -368,7 +373,7 @@ export default function Header() {
 
           {/* Right Action buttons */}
           <div className="hidden md:flex items-center gap-4">
-            {isAuthenticated && user ? (
+            {mounted && isAuthenticated && user ? (
               <>
                 <Link
                   href={dashboardHref(user.role)}
@@ -420,7 +425,7 @@ export default function Header() {
 
           {/* Mobile menu trigger */}
           <div className="flex md:hidden items-center gap-3">
-            {isAuthenticated && user ? (
+            {mounted && isAuthenticated && user ? (
               <>
                 <Link
                   href={dashboardHref(user.role)}
@@ -493,7 +498,7 @@ export default function Header() {
               ))}
             </nav>
             <div className="flex flex-col gap-2 pt-4">
-              {isAuthenticated && user ? (
+              {mounted && isAuthenticated && user ? (
                 <>
                   <Link
                     href={dashboardHref(user.role)}

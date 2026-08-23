@@ -27,7 +27,27 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window === 'undefined') return;
+                var orgError = console.error;
+                console.error = function() {
+                  var str = Array.prototype.slice.call(arguments).map(function(a) {
+                    try { return typeof a === 'object' ? JSON.stringify(a) : String(a); } catch(e) { return String(a); }
+                  }).join(' ');
+                  if (str.indexOf('bis_skin_checked') !== -1) return;
+                  orgError.apply(console, arguments);
+                };
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>

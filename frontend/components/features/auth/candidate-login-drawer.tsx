@@ -139,7 +139,7 @@ export default function CandidateLoginDrawer({
 
           <button
             type="button"
-            onClick={() => window.location.assign("http://localhost:5000/api/auth/google")}
+            onClick={() => window.location.assign("/api/auth/google")}
             className="w-full flex items-center justify-center gap-2 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-sm font-semibold text-slate-700 py-3 rounded-lg transition-colors"
           >
             <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">

@@ -60,6 +60,7 @@ export interface Job {
   minSalary?: number | null;
   maxSalary?: number | null;
   salaryCurrency?: string;
+  showSalary?: boolean;
   salaryText?: string;
   applicantsCount: number;
   viewsCount: number;
@@ -68,6 +69,7 @@ export interface Job {
   status: "live" | "draft" | "expiring" | "closed";
   description?: string;
   skills?: string[];
+  responsibilities?: string[];
   qualifications?: string[];
   benefits?: string[];
   tags?: string[];

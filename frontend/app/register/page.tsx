@@ -55,7 +55,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register/candidate", {
+      const res = await fetch("/api/auth/register/candidate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -84,7 +84,7 @@ export default function RegisterPage() {
     setResendSuccess(false);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/resend-verification", {
+      const res = await fetch("/api/auth/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

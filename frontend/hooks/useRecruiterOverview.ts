@@ -43,8 +43,44 @@ export function useRecruiterOverview() {
   const [selectedApplicant, setSelectedApplicant] = useState<JobApplication | null>(null);
 
   // ── Add Handlers ────────────────────────────────────────────────────────
-  const addJob = (newJob: Job) => {
-    setAllJobs((prev) => [newJob, ...prev]);
+  const addJob = (newJob: any) => {
+    const formattedJob: Job = {
+      id: newJob.id || `job-${Date.now()}`,
+      companyId: newJob.companyId || "comp-1",
+      companyName: newJob.companyName || newJob.company?.displayName || "JPS Employer Corp",
+      title: newJob.title || "Untitled Job",
+      department: typeof newJob.department === "object" && newJob.department !== null
+        ? newJob.department.departmentName || newJob.department.name || "Engineering"
+        : (newJob.department || "Engineering"),
+      designation: typeof newJob.designation === "object" && newJob.designation !== null
+        ? newJob.designation.designationName || newJob.designation.name || "Senior Software Engineer"
+        : (newJob.designation || "Senior Software Engineer"),
+      employmentType: newJob.employmentType || "Full-time",
+      workMode: newJob.workMode === "remote" || newJob.workMode === "REMOTE" ? "Remote" : newJob.workMode === "hybrid" || newJob.workMode === "HYBRID" ? "Hybrid" : "On-site",
+      seniorityLevel: newJob.seniorityLevel || "Senior",
+      location: newJob.location || (Array.isArray(newJob.locations) ? newJob.locations[0] : "Kathmandu, Nepal"),
+      minExperienceMonths: newJob.minExperienceMonths ?? 24,
+      maxExperienceMonths: newJob.maxExperienceMonths ?? 72,
+      minSalary: newJob.salaryMin ?? newJob.minSalary ?? 800000,
+      maxSalary: newJob.salaryMax ?? newJob.maxSalary ?? 1800000,
+      salaryCurrency: newJob.salaryCurrency || "NPR",
+      showSalary: newJob.showSalary ?? true,
+      salaryText: `${newJob.salaryCurrency || "NPR"} ${((newJob.salaryMin ?? newJob.minSalary ?? 800000) / 100000).toFixed(1)}L – ${((newJob.salaryMax ?? newJob.maxSalary ?? 1800000) / 100000).toFixed(1)}L / year`,
+      applicantsCount: newJob.applicantsCount ?? 0,
+      viewsCount: newJob.viewsCount ?? 0,
+      postedDate: "Just now",
+      expiresInDays: 30,
+      status: (newJob.status === "PUBLISHED" || newJob.status === "live" || newJob.status === "published") ? "live" : "draft",
+      description: newJob.description || "",
+      skills: Array.isArray(newJob.skills) ? newJob.skills.map((s: any) => typeof s === "object" ? s.name || s.skillName || String(s) : String(s)) : [],
+      qualifications: Array.isArray(newJob.qualifications) ? newJob.qualifications.map((q: any) => typeof q === "object" ? q.name || q.qualificationName || String(q) : String(q)) : [],
+      benefits: Array.isArray(newJob.benefits) ? newJob.benefits.map((b: any) => typeof b === "object" ? b.name || String(b) : String(b)) : [],
+      tags: Array.isArray(newJob.tags) ? newJob.tags.map((t: any) => typeof t === "object" ? t.name || String(t) : String(t)) : [],
+      locations: newJob.locations || [newJob.location || "Kathmandu, Nepal"],
+      media: newJob.media || [],
+    };
+
+    setAllJobs((prev) => [formattedJob, ...prev]);
   };
 
   const addInterview = (newInterview: Interview) => {

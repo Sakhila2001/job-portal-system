@@ -109,7 +109,13 @@ export default function JobPostingsTable({
     {
       key: "department",
       header: "Department",
-      render: (row) => <span className="text-stone-600">{row.department}</span>,
+      render: (row) => (
+        <span className="text-stone-600">
+          {typeof row.department === "object" && row.department !== null
+            ? (row.department as any).departmentName || (row.department as any).name || "—"
+            : String(row.department || "—")}
+        </span>
+      ),
     },
     {
       key: "applicantsCount",

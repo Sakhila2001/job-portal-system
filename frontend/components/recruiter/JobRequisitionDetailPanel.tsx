@@ -5,7 +5,7 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import { Job } from "@/lib/types";
 import {
   Briefcase, MapPin, DollarSign, Clock, Users, Eye, Sparkles,
-  GraduationCap, Award, Tag, Edit3, Calendar, Megaphone, Power, FileText
+  GraduationCap, Award, Tag, Edit3, Calendar, Megaphone, Power, FileText, ListChecks
 } from "lucide-react";
 
 interface JobRequisitionDetailPanelProps {
@@ -33,7 +33,9 @@ export default function JobRequisitionDetailPanel({
       <div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-            {job.department}
+            {typeof job.department === "object" && job.department !== null
+              ? (job.department as any).departmentName || (job.department as any).name || "—"
+              : String(job.department || "—")}
           </span>
           {job.seniorityLevel && (
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded capitalize">
@@ -43,7 +45,9 @@ export default function JobRequisitionDetailPanel({
         </div>
         <h3 className="font-bold text-slate-900 text-[18px] mt-1.5 leading-snug">{job.title}</h3>
         <p className="text-[12px] text-slate-500 font-medium mt-0.5">
-          {job.designation || job.title} • {job.employmentType}
+          {typeof job.designation === "object" && job.designation !== null
+            ? (job.designation as any).designationName || (job.designation as any).name || job.title
+            : String(job.designation || job.title)} • {job.employmentType}
         </p>
       </div>
 
@@ -109,70 +113,72 @@ export default function JobRequisitionDetailPanel({
         </p>
       </div>
 
+      {/* ── Key Responsibilities ── */}
+      {job.responsibilities && job.responsibilities.length > 0 && (
+        <div className="space-y-1.5 border-t border-slate-100 pt-4">
+          <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+            <ListChecks className="h-3.5 w-3.5 text-slate-400" /> Key Responsibilities
+          </h4>
+          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+            {job.responsibilities.map((resp, i) => (
+              <li key={i}>{typeof resp === "object" ? (resp as any).responsibility : resp}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* ── Required Skills ── */}
       <div className="space-y-1.5 border-t border-slate-100 pt-4">
         <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles className="h-3.5 w-3.5 text-slate-400" /> Required Skills & Tech Stack
+          <Sparkles className="h-3.5 w-3.5 text-slate-400" /> Required Skills
         </h4>
-        <div className="flex flex-wrap gap-1.5">
+        <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3.5">
           {job.skills && job.skills.length > 0 ? (
             job.skills.map((skill, i) => (
-              <span key={i} className="inline-flex items-center gap-1 text-[11px] font-semibold bg-slate-100 text-slate-800 border border-slate-200 px-2.5 py-1 rounded-lg">
-                {skill}
-              </span>
+              <li key={i}>{typeof skill === "object" ? (skill as any).name || (skill as any).skillName : skill}</li>
             ))
           ) : (
             ["React", "Node.js", "TypeScript", "PostgreSQL", "Tailwind CSS"].map((skill, i) => (
-              <span key={i} className="inline-flex items-center gap-1 text-[11px] font-semibold bg-slate-100 text-slate-800 border border-slate-200 px-2.5 py-1 rounded-lg">
-                {skill}
-              </span>
+              <li key={i}>{skill}</li>
             ))
           )}
-        </div>
+        </ul>
       </div>
 
       {/* ── Qualifications & Benefits Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-slate-100 pt-4">
-        {/* Education */}
-        <div className="space-y-1">
+        {/* Education & Qualifications */}
+        <div className="space-y-1.5">
           <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-            <GraduationCap className="h-3.5 w-3.5 text-slate-400" /> Education
+            <GraduationCap className="h-3.5 w-3.5 text-slate-400" /> Qualifications
           </h4>
-          <div className="flex flex-wrap gap-1">
+          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3">
             {job.qualifications && job.qualifications.length > 0 ? (
               job.qualifications.map((q, i) => (
-                <span key={i} className="text-[11px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg">
-                  {q}
-                </span>
+                <li key={i}>{typeof q === "object" ? (q as any).name || (q as any).qualificationName : q}</li>
               ))
             ) : (
-              <span className="text-[11px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg">
-                Bachelor&apos;s in Computer Science
-              </span>
+              <li>Bachelor&apos;s in Computer Science</li>
             )}
-          </div>
+          </ul>
         </div>
 
         {/* Benefits */}
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
             <Award className="h-3.5 w-3.5 text-slate-400" /> Benefits
           </h4>
-          <div className="flex flex-wrap gap-1">
+          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3">
             {job.benefits && job.benefits.length > 0 ? (
               job.benefits.map((b, i) => (
-                <span key={i} className="text-[11px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg">
-                  {b}
-                </span>
+                <li key={i}>{typeof b === "object" ? (b as any).name || (b as any).benefitName : b}</li>
               ))
             ) : (
               ["Health Cover", "Remote Work", "Dashain Bonus"].map((b, i) => (
-                <span key={i} className="text-[11px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg">
-                  {b}
-                </span>
+                <li key={i}>{b}</li>
               ))
             )}
-          </div>
+          </ul>
         </div>
       </div>
 

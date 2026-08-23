@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshAccessToken = useCallback(async (): Promise<string | null> => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/refresh", {
+      const response = await fetch("/api/auth/refresh", {
         method: "POST",
         credentials: "include",
       });
@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string, role?: string): Promise<{ user: AuthUser; accessToken: string }> => {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await fetch("http://localhost:5000/api/auth/logout", {
+      await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
