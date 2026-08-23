@@ -194,7 +194,10 @@ export async function updateRecruiterJob(
   if (data.title !== undefined) update.title = data.title;
   if (data.description !== undefined) update.description = data.description;
   if (data.employmentType !== undefined) update.employmentType = data.employmentType;
-  if (data.workMode !== undefined) update.workMode = data.workMode;
+  if (data.workMode !== undefined) {
+    const workMode = data.workMode.toLowerCase();
+    update.workMode = workMode === "remote" ? "REMOTE" : workMode === "hybrid" ? "HYBRID" : "ONSITE";
+  }
   if (data.seniorityLevel !== undefined) update.seniorityLevel = data.seniorityLevel;
   if (data.minExperienceMonths !== undefined) update.minExperienceMonths = data.minExperienceMonths;
   if (data.maxExperienceMonths !== undefined) update.maxExperienceMonths = data.maxExperienceMonths;
@@ -205,7 +208,10 @@ export async function updateRecruiterJob(
   if (maxSalary !== undefined) update.maxSalary = maxSalary;
   if (data.salaryCurrency !== undefined) update.salaryCurrency = data.salaryCurrency;
   if (data.showSalary !== undefined) update.showSalary = data.showSalary;
-  if (data.status !== undefined) update.status = data.status;
+  if (data.status !== undefined) {
+    const status = data.status.toLowerCase();
+    update.status = status === "published" || status === "live" ? PUBLISHED_STATUS : status === "draft" ? "draft" : data.status;
+  }
   if (data.expiresAt !== undefined) update.expiresAt = data.expiresAt;
 
   if (data.designationId) {
@@ -235,6 +241,10 @@ export async function updateRecruiterJob(
 
   if (data.skills !== undefined) {
     await JobRepository.syncJobSkills(jobId, data.skills);
+  }
+
+  if (data.responsibilities !== undefined) {
+    await JobRepository.syncJobResponsibilities(jobId, data.responsibilities);
   }
 
   if (data.qualifications !== undefined) {

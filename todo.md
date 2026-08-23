@@ -1,5 +1,6 @@
 # Todo
 
-- ✅ Inspect job listings loading flow
-- ✅ Add table loading indicator
-- ✅ Verify behavior and tests
+- 🔄 Identify three-column board and data flow
+- ⬜ Inspect backend schema and APIs
+- ⬜ Implement database-backed drag and drop
+- ⬜ Apply schema migration and verify

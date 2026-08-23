@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Job } from "@/lib/types";
 import {
   Plus,
   Calendar,
@@ -50,7 +51,9 @@ function cleanErrorMessage(rawMessage: string): string {
 interface CreateJobModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onJobCreated: (newJob: any) => void;
+  onJobCreated: (newJob: unknown) => void;
+  job?: Job | null;
+  onJobUpdated?: (updatedJob: unknown) => void;
 }
 
 interface ScheduleInterviewModalProps {
@@ -199,8 +202,11 @@ export function CreateJobModal({
   isOpen,
   onClose,
   onJobCreated,
+  job = null,
+  onJobUpdated,
 }: CreateJobModalProps) {
   const { tokens } = useAuth();
+  const isEditing = Boolean(job);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -277,6 +283,38 @@ export function CreateJobModal({
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [newMediaUrl, setNewMediaUrl] = useState("");
 
+  // Populate the same form used for creation when editing an existing listing.
+  useEffect(() => {
+    if (!isOpen || !job) return;
+
+    setStep(0);
+    setSubmitted(false);
+    setSubmitError(null);
+    setTitle(job.title || "");
+    setDesignation(job.designation || job.title || "");
+    setDepartment(job.department || "");
+    setEmploymentType((job.employmentType || "full_time").toLowerCase().replace(/[ -]/g, "_"));
+    setWorkMode(job.workMode === "On-site" ? "on_site" : job.workMode.toLowerCase());
+    setSeniorityLevel((job.seniorityLevel || "mid").toLowerCase().replace(/[ -]/g, "_"));
+    setDescription(job.description || "");
+    setMinExpMonths(String(job.minExperienceMonths ?? 0));
+    setMaxExpMonths(String(job.maxExperienceMonths ?? 0));
+    setLocations(job.locations?.length ? job.locations : job.location ? [job.location] : []);
+    setExpiresAt(job.expiresAt ? job.expiresAt.slice(0, 10) : "");
+    setStatus(job.status === "live" || job.status === "expiring" ? "published" : job.status === "closed" ? "CLOSED" : "draft");
+    setMinSalary(String(job.minSalary ?? 0));
+    setMaxSalary(String(job.maxSalary ?? 0));
+    setSalaryCurrency(job.salaryCurrency || "NPR");
+    setShowSalary(job.showSalary ?? true);
+    setResponsibilities(job.responsibilities || []);
+    setRequiredSkills(job.skills || []);
+    setPreferredSkills(job.preferredSkills || []);
+    setQualifications(job.qualifications || []);
+    setBenefits(job.benefits || []);
+    setTags(job.tags || []);
+    setMediaUrls(job.media || []);
+  }, [isOpen, job]);
+
   // Fetch Departments & Designations from DB when modal opens
   useEffect(() => {
     if (!isOpen) return;
@@ -308,7 +346,7 @@ export function CreateJobModal({
               name: d.departmentName || d.name,
             }));
             setDbDepartments(mapped);
-            if (mapped[0]?.name) setDepartment(mapped[0].name);
+            if (!job && mapped[0]?.name) setDepartment(mapped[0].name);
           }
         }
 
@@ -321,7 +359,7 @@ export function CreateJobModal({
               name: d.designationName || d.name,
             }));
             setDbDesignations(mapped);
-            if (mapped[0]?.name) setDesignation(mapped[0].name);
+            if (!job && mapped[0]?.name) setDesignation(mapped[0].name);
           }
         }
       } catch (err) {
@@ -330,7 +368,7 @@ export function CreateJobModal({
     };
 
     fetchLookups();
-  }, [isOpen, tokens.accessToken]);
+  }, [isOpen, job, tokens.accessToken]);
 
   if (!isOpen) return null;
 
@@ -450,12 +488,15 @@ export function CreateJobModal({
         headers["Authorization"] = `Bearer ${tokens.accessToken}`;
       }
 
-      const response = await fetch("/api/recruiter/jobs", {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        isEditing ? `/api/recruiter/jobs/${job!.id}` : "/api/recruiter/jobs",
+        {
+          method: isEditing ? "PUT" : "POST",
+          headers,
+          credentials: "include",
+          body: JSON.stringify(payload),
+        },
+      );
 
       const savedJob = await response.json();
 
@@ -467,7 +508,11 @@ export function CreateJobModal({
 
       setSubmitted(true);
       setTimeout(() => {
-        onJobCreated(savedJob);
+        if (isEditing) {
+          onJobUpdated?.(savedJob);
+        } else {
+          onJobCreated(savedJob);
+        }
         handleReset();
         onClose();
       }, 1200);
@@ -530,10 +575,10 @@ export function CreateJobModal({
             </div>
             <div>
               <h3 className="text-[15px] font-bold text-slate-900">
-                Post New Job Requisition
+                {isEditing ? "Edit Job Requisition" : "Post New Job Requisition"}
               </h3>
               <p className="text-[11px] text-slate-400 font-medium">
-                Complete all steps to publish your listing
+                {isEditing ? "Update the listing using the same job details" : "Complete all steps to publish your listing"}
               </p>
             </div>
           </div>
@@ -560,13 +605,15 @@ export function CreateJobModal({
               <CheckCircle2 className="h-8 w-8 text-emerald-600" />
             </div>
             <h4 className="text-[18px] font-bold text-slate-900">
-              Job Posted Successfully!
+              {isEditing ? "Job Updated Successfully!" : "Job Posted Successfully!"}
             </h4>
             <p className="text-[13px] text-slate-500 mt-1 text-center max-w-sm">
               <strong>{title}</strong> has been{" "}
-              {status === "published"
-                ? "published and is now live"
-                : "saved as draft"}{" "}
+              {isEditing
+                ? "updated"
+                : status === "published"
+                  ? "published and is now live"
+                  : "saved as draft"}{" "}
               on your job board.
             </p>
           </div>
@@ -1564,9 +1611,11 @@ export function CreateJobModal({
                     <CheckCircle2 className="h-3.5 w-3.5" />{" "}
                     {isSubmitting
                       ? "Saving to Database..."
-                      : status === "published"
-                        ? "Publish Job"
-                        : "Save as Draft"}
+                      : isEditing
+                        ? "Save Changes"
+                        : status === "published"
+                          ? "Publish Job"
+                          : "Save as Draft"}
                   </button>
                 </div>
               )}

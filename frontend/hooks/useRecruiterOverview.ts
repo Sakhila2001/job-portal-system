@@ -92,14 +92,18 @@ function transformApiJobToJob(apiJob: any): Job {
       )
     : [];
 
-  // Extract skills
-  const skills: string[] = Array.isArray(apiJob.skills)
-    ? apiJob.skills.map((s: any) =>
-        typeof s === "object" && s !== null
-          ? s.skill?.skillName || s.name || s.skillName || String(s)
-          : String(s)
-      )
-    : [];
+  // Extract required and preferred skills separately so editing preserves both.
+  const skillItems = Array.isArray(apiJob.skills) ? apiJob.skills : [];
+  const skillName = (skill: any) =>
+    typeof skill === "object" && skill !== null
+      ? skill.skill?.skillName || skill.name || skill.skillName || String(skill)
+      : String(skill);
+  const skills: string[] = skillItems
+    .filter((skill: any) => skill?.isMandatory !== false)
+    .map(skillName);
+  const preferredSkills: string[] = skillItems
+    .filter((skill: any) => skill?.isMandatory === false)
+    .map(skillName);
 
   // Extract responsibilities
   const responsibilities: string[] = Array.isArray(apiJob.responsibilities)
@@ -193,9 +197,11 @@ function transformApiJobToJob(apiJob: any): Job {
     viewsCount: apiJob._count?.views ?? apiJob.viewsCount ?? 0,
     postedDate,
     expiresInDays,
+    expiresAt: apiJob.expiresAt || null,
     status,
     description: apiJob.description || "",
     skills,
+    preferredSkills,
     responsibilities,
     qualifications,
     benefits,

@@ -66,9 +66,11 @@ export interface Job {
   viewsCount: number;
   postedDate: string;
   expiresInDays?: number | null;
+  expiresAt?: string | null;
   status: "live" | "draft" | "expiring" | "closed";
   description?: string;
   skills?: string[];
+  preferredSkills?: string[];
   responsibilities?: string[];
   qualifications?: string[];
   benefits?: string[];

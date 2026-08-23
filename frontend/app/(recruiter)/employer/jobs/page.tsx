@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import JobPostingsTable from "@/components/recruiter/JobPostingsTable";
-import StatusBadge from "@/components/shared/StatusBadge";
 import { useRecruiterOverview } from "@/hooks/useRecruiterOverview";
 import { getRecruiterNavItems } from "@/lib/recruiter-nav";
 import { CreateJobModal } from "@/components/recruiter/RecruiterModals";
-import { Plus } from "lucide-react";
+import { Job } from "@/lib/types";
+import { CheckCircle2, Plus } from "lucide-react";
 
 import JobRequisitionDetailPanel from "@/components/recruiter/JobRequisitionDetailPanel";
 import { ScheduleInterviewModal } from "@/components/recruiter/RecruiterModals";
@@ -35,6 +35,7 @@ export default function RecruiterJobsPage() {
     toggleAllJobsOnPage,
     handleBulkJobAction,
     addJob,
+    refetchJobs,
     addInterview,
     selectedJob,
     setSelectedJob,
@@ -42,6 +43,7 @@ export default function RecruiterJobsPage() {
   } = useRecruiterOverview();
 
   const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
+  const [jobToEdit, setJobToEdit] = useState<Job | null>(null);
   const [isScheduleInterviewOpen, setIsScheduleInterviewOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -63,7 +65,7 @@ export default function RecruiterJobsPage() {
         selectedJob ? (
           <JobRequisitionDetailPanel
             job={selectedJob}
-            onEdit={(j) => { setToast(`Editing "${j.title}"`); setSelectedJob(null); }}
+            onEdit={(j) => { setJobToEdit(j); setSelectedJob(null); }}
             onScheduleInterview={() => { setIsScheduleInterviewOpen(true); setSelectedJob(null); }}
             onBoostCampaign={(j) => { setToast(`Launching boost campaign for "${j.title}"`); setSelectedJob(null); }}
             onClosePosting={(j) => { setToast(`Closed posting "${j.title}"`); setSelectedJob(null); }}
@@ -81,6 +83,24 @@ export default function RecruiterJobsPage() {
         onClose={() => setIsCreateJobOpen(false)}
         onJobCreated={(newJob) => addJob(newJob)}
       />
+      <CreateJobModal
+        isOpen={!!jobToEdit}
+        job={jobToEdit}
+        onClose={() => setJobToEdit(null)}
+        onJobCreated={() => undefined}
+        onJobUpdated={async () => {
+          const title = jobToEdit?.title || "Job";
+          await refetchJobs();
+          setToast(`Updated "${title}" successfully`);
+          setTimeout(() => setToast(null), 3000);
+        }}
+      />
+
+      {toast && (
+        <div className="fixed right-5 top-5 z-[60] flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-3 text-[12px] font-semibold text-white shadow-lg">
+          <CheckCircle2 className="h-4 w-4" /> {toast}
+        </div>
+      )}
 
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-5 shadow-2xs">
@@ -121,6 +141,7 @@ export default function RecruiterJobsPage() {
           onToggleSelectAll={toggleAllJobsOnPage}
           onBulkAction={handleBulkJobAction}
           onViewJob={setSelectedJob}
+          onEditJob={setJobToEdit}
           onNewJob={() => setIsCreateJobOpen(true)}
         />
       </div>

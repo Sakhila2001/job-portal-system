@@ -4,9 +4,64 @@ import React from "react";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Job } from "@/lib/types";
 import {
-  Briefcase, MapPin, DollarSign, Clock, Users, Eye, Sparkles,
-  GraduationCap, Award, Tag, Edit3, Calendar, Megaphone, Power, FileText, ListChecks
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Clock,
+  Users,
+  Eye,
+  Sparkles,
+  GraduationCap,
+  Award,
+  Tag,
+  Edit3,
+  Calendar,
+  Megaphone,
+  Power,
+  FileText,
+  ListChecks,
 } from "lucide-react";
+
+interface NamedValue {
+  departmentName?: string;
+  designationName?: string;
+  name?: string;
+}
+
+function getNamedValue(value: unknown, keys: (keyof NamedValue)[]): string {
+  if (typeof value === "string") return value.trim();
+  if (!value || typeof value !== "object") return "";
+
+  const record = value as NamedValue;
+  for (const key of keys) {
+    const candidate = record[key];
+    if (typeof candidate === "string" && candidate.trim()) return candidate.trim();
+  }
+  return "";
+}
+
+function formatLabel(value: string): string {
+  if (!value) return "—";
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatSeniority(value: string): string {
+  const labels: Record<string, string> = {
+    intern: "Intern",
+    entry: "Entry Level",
+    junior: "Junior",
+    mid: "Mid Level",
+    senior: "Senior",
+    lead: "Lead / Staff",
+    principal: "Principal",
+    director: "Director",
+    vp: "VP",
+    c_level: "C-Level",
+  };
+  return labels[value.toLowerCase()] || formatLabel(value);
+}
 
 interface JobRequisitionDetailPanelProps {
   job: Job;
@@ -23,38 +78,59 @@ export default function JobRequisitionDetailPanel({
   onBoostCampaign,
   onClosePosting,
 }: JobRequisitionDetailPanelProps) {
-  const minExp = job.minExperienceMonths ? `${(job.minExperienceMonths / 12).toFixed(0)}y` : null;
-  const maxExp = job.maxExperienceMonths ? `${(job.maxExperienceMonths / 12).toFixed(0)}y` : null;
-  const expText = minExp && maxExp ? `${minExp} – ${maxExp}` : minExp ? `${minExp}+` : "Any experience";
+  const minExp = job.minExperienceMonths
+    ? `${(job.minExperienceMonths / 12).toFixed(0)}y`
+    : null;
+  const maxExp = job.maxExperienceMonths
+    ? `${(job.maxExperienceMonths / 12).toFixed(0)}y`
+    : null;
+  const expText =
+    minExp && maxExp
+      ? `${minExp} – ${maxExp}`
+      : minExp
+        ? `${minExp}+`
+        : "Any experience";
+  const departmentLabel = formatLabel(
+    getNamedValue(job.department, ["departmentName", "name"]),
+  );
+  const seniorityLabel = formatSeniority(job.seniorityLevel || "");
+  const designationLabel =
+    getNamedValue(job.designation, ["designationName", "name"]) || job.title;
 
   return (
     <div className="space-y-5 text-[13px]">
       {/* ── Title & Header ── */}
       <div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-            {typeof job.department === "object" && job.department !== null
-              ? (job.department as any).departmentName || (job.department as any).name || "—"
-              : String(job.department || "—")}
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className="inline-flex min-h-6 items-center rounded-md border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-wider text-slate-700"
+            title={`Department: ${departmentLabel}`}
+          >
+            {departmentLabel}
           </span>
           {job.seniorityLevel && (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded capitalize">
-              {job.seniorityLevel}
+            <span
+              className="inline-flex min-h-6 items-center rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-wider text-blue-700"
+              title={`Seniority: ${seniorityLabel}`}
+            >
+              {seniorityLabel}
             </span>
           )}
         </div>
-        <h3 className="font-bold text-slate-900 text-[18px] mt-1.5 leading-snug">{job.title}</h3>
+        <h3 className="font-bold text-slate-900 text-[18px] mt-1.5 leading-snug">
+          {job.title}
+        </h3>
         <p className="text-[12px] text-slate-500 font-medium mt-0.5">
-          {typeof job.designation === "object" && job.designation !== null
-            ? (job.designation as any).designationName || (job.designation as any).name || job.title
-            : String(job.designation || job.title)} • {job.employmentType}
+          {designationLabel} • {formatLabel(job.employmentType)}
         </p>
       </div>
 
       {/* ── Status Bar ── */}
-      <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
+      <div className="flex items-center justify-between p-3  rounded-xl">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold text-slate-500">Status:</span>
+          <span className="text-[11px] font-semibold text-slate-500">
+            Status:
+          </span>
           <StatusBadge status={job.status} showDot />
         </div>
         {(job.expiresInDays ?? 0) > 0 && (
@@ -71,31 +147,45 @@ export default function JobRequisitionDetailPanel({
           <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-center gap-1">
             <Users className="h-3 w-3 text-slate-400" /> Applicants
           </div>
-          <div className="text-[18px] font-bold text-slate-900 font-mono mt-0.5">{job.applicantsCount}</div>
+          <div className="text-[18px] font-bold text-slate-900 font-mono mt-0.5">
+            {job.applicantsCount}
+          </div>
         </div>
         <div className="p-3 bg-white border border-slate-200 rounded-xl">
           <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-center gap-1">
             <Eye className="h-3 w-3 text-slate-400" /> Views
           </div>
-          <div className="text-[18px] font-bold text-slate-900 font-mono mt-0.5">{job.viewsCount}</div>
+          <div className="text-[18px] font-bold text-slate-900 font-mono mt-0.5">
+            {job.viewsCount}
+          </div>
         </div>
         <div className="p-3 bg-white border border-slate-200 rounded-xl">
-          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Experience</div>
-          <div className="text-[13px] font-bold text-slate-900 font-mono mt-1">{expText}</div>
+          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+            Experience
+          </div>
+          <div className="text-[13px] font-bold text-slate-900 font-mono mt-1">
+            {expText}
+          </div>
         </div>
         <div className="p-3 bg-white border border-slate-200 rounded-xl">
-          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Work Mode</div>
-          <div className="text-[13px] font-bold text-slate-900 mt-1">{job.workMode}</div>
+          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+            Work Mode
+          </div>
+          <div className="text-[13px] font-bold text-slate-900 mt-1">
+            {job.workMode}
+          </div>
         </div>
       </div>
 
       {/* ── Compensation & Location Card ── */}
       <div className="p-4 bg-slate-900 text-white rounded-xl space-y-2">
         <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-          <DollarSign className="h-3.5 w-3.5 text-slate-400" /> Compensation & Salary Range
+          <DollarSign className="h-3.5 w-3.5 text-slate-400" /> Compensation &
+          Salary Range
         </div>
         <div className="text-[18px] font-bold font-mono">
-          {job.salaryText || `${job.salaryCurrency || "NPR"} ${(job.minSalary || 800000).toLocaleString()} – ${(job.maxSalary || 1800000).toLocaleString()} / yr`}
+          {job.salaryText ||
+            `${job.salaryCurrency || "NPR"} ${(job.minSalary || 800000).toLocaleString()} – ${(job.maxSalary || 1800000).toLocaleString()} / yr`}
         </div>
         <div className="flex items-center gap-1.5 text-[11px] text-slate-300 pt-1 border-t border-white/10">
           <MapPin className="h-3.5 w-3.5 text-slate-400" />
@@ -108,8 +198,9 @@ export default function JobRequisitionDetailPanel({
         <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
           <FileText className="h-3.5 w-3.5 text-slate-400" /> Job Description
         </h4>
-        <p className="text-[12px] text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50 border border-slate-200 rounded-xl p-3.5">
-          {job.description || "No full description provided. Click Edit Job to write key responsibilities and growth opportunities."}
+        <p className="text-[12px] text-slate-600 leading-relaxed whitespace-pre-line  rounded-xl p-3.5">
+          {job.description ||
+            "No full description provided. Click Edit Job to write key responsibilities and growth opportunities."}
         </p>
       </div>
 
@@ -117,11 +208,14 @@ export default function JobRequisitionDetailPanel({
       {job.responsibilities && job.responsibilities.length > 0 && (
         <div className="space-y-1.5 border-t border-slate-100 pt-4">
           <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-            <ListChecks className="h-3.5 w-3.5 text-slate-400" /> Key Responsibilities
+            <ListChecks className="h-3.5 w-3.5 text-slate-400" /> Key
+            Responsibilities
           </h4>
-          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium  rounded-xl p-3.5">
             {job.responsibilities.map((resp, i) => (
-              <li key={i}>{typeof resp === "object" ? (resp as any).responsibility : resp}</li>
+              <li key={i}>
+                {typeof resp === "object" ? (resp as any).responsibility : resp}
+              </li>
             ))}
           </ul>
         </div>
@@ -132,30 +226,41 @@ export default function JobRequisitionDetailPanel({
         <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
           <Sparkles className="h-3.5 w-3.5 text-slate-400" /> Required Skills
         </h4>
-        <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3.5">
-          {job.skills && job.skills.length > 0 ? (
-            job.skills.map((skill, i) => (
-              <li key={i}>{typeof skill === "object" ? (skill as any).name || (skill as any).skillName : skill}</li>
-            ))
-          ) : (
-            ["React", "Node.js", "TypeScript", "PostgreSQL", "Tailwind CSS"].map((skill, i) => (
-              <li key={i}>{skill}</li>
-            ))
-          )}
+        <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium  rounded-xl p-3.5">
+          {job.skills && job.skills.length > 0
+            ? job.skills.map((skill, i) => (
+                <li key={i}>
+                  {typeof skill === "object"
+                    ? (skill as any).name || (skill as any).skillName
+                    : skill}
+                </li>
+              ))
+            : [
+                "React",
+                "Node.js",
+                "TypeScript",
+                "PostgreSQL",
+                "Tailwind CSS",
+              ].map((skill, i) => <li key={i}>{skill}</li>)}
         </ul>
       </div>
 
-      {/* ── Qualifications & Benefits Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-slate-100 pt-4">
+      {/* ── Qualifications & Benefits ── */}
+      <div className="space-y-4 border-t border-slate-100 pt-4">
         {/* Education & Qualifications */}
         <div className="space-y-1.5">
-          <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-            <GraduationCap className="h-3.5 w-3.5 text-slate-400" /> Qualifications
+          <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+            <GraduationCap className="h-3.5 w-3.5 text-slate-400" />{" "}
+            Qualifications
           </h4>
-          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium  rounded-xl p-3.5">
             {job.qualifications && job.qualifications.length > 0 ? (
               job.qualifications.map((q, i) => (
-                <li key={i}>{typeof q === "object" ? (q as any).name || (q as any).qualificationName : q}</li>
+                <li key={i}>
+                  {typeof q === "object"
+                    ? (q as any).name || (q as any).qualificationName
+                    : q}
+                </li>
               ))
             ) : (
               <li>Bachelor&apos;s in Computer Science</li>
@@ -165,19 +270,21 @@ export default function JobRequisitionDetailPanel({
 
         {/* Benefits */}
         <div className="space-y-1.5">
-          <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+          <h4 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
             <Award className="h-3.5 w-3.5 text-slate-400" /> Benefits
           </h4>
-          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium bg-slate-50 border border-slate-200 rounded-xl p-3">
-            {job.benefits && job.benefits.length > 0 ? (
-              job.benefits.map((b, i) => (
-                <li key={i}>{typeof b === "object" ? (b as any).name || (b as any).benefitName : b}</li>
-              ))
-            ) : (
-              ["Health Cover", "Remote Work", "Dashain Bonus"].map((b, i) => (
-                <li key={i}>{b}</li>
-              ))
-            )}
+          <ul className="list-disc list-inside space-y-1 text-[12px] text-slate-700 font-medium  rounded-xl p-3.5">
+            {job.benefits && job.benefits.length > 0
+              ? job.benefits.map((b, i) => (
+                  <li key={i}>
+                    {typeof b === "object"
+                      ? (b as any).name || (b as any).benefitName
+                      : b}
+                  </li>
+                ))
+              : ["Health Cover", "Remote Work", "Dashain Bonus"].map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
           </ul>
         </div>
       </div>
@@ -190,7 +297,10 @@ export default function JobRequisitionDetailPanel({
           </h4>
           <div className="flex flex-wrap gap-1">
             {job.tags.map((t, i) => (
-              <span key={i} className="text-[10px] font-mono font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+              <span
+                key={i}
+                className="text-[10px] font-mono font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md"
+              >
                 #{t}
               </span>
             ))}
@@ -211,7 +321,8 @@ export default function JobRequisitionDetailPanel({
             onClick={() => onScheduleInterview?.(job)}
             className="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-semibold py-2.5 rounded-lg transition text-[12px] shadow-2xs"
           >
-            <Calendar className="h-3.5 w-3.5 text-slate-500" /> Schedule Interview
+            <Calendar className="h-3.5 w-3.5 text-slate-500" /> Schedule
+            Interview
           </button>
         </div>
 
