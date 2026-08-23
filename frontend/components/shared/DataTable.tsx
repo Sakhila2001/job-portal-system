@@ -4,13 +4,14 @@ import React from "react";
 import { ColumnDef, PaginationState } from "@/lib/types";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
-import { Eye } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 interface DataTableProps<T extends Record<string, any>> {
   columns: ColumnDef<T>[];
   data: T[];
   keyExtractor: (row: T) => string;
   isLoading?: boolean;
+  loadingLabel?: string;
   emptyTitle?: string;
   emptyDescription?: string;
   emptyActionLabel?: string;
@@ -34,6 +35,7 @@ export default function DataTable<T extends Record<string, any>>({
   data,
   keyExtractor,
   isLoading = false,
+  loadingLabel = "Loading records...",
   emptyTitle = "No records found",
   emptyDescription = "No data matches the selected filters.",
   emptyActionLabel,
@@ -83,17 +85,21 @@ export default function DataTable<T extends Record<string, any>>({
 
           <tbody className="divide-y divide-stone-100 font-normal">
             {isLoading ? (
-              // Loading Skeleton Rows
-              Array.from({ length: 4 }).map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  {onToggleSelectRow && <td className="px-3 py-4 text-center"><div className="h-3 w-3 bg-stone-200 rounded mx-auto" /></td>}
-                  {columns.map((col) => (
-                    <td key={col.key} className="px-3.5 py-4">
-                      <div className="h-3.5 bg-stone-200 rounded w-3/4" />
-                    </td>
-                  ))}
-                </tr>
-              ))
+              <tr>
+                <td
+                  colSpan={columns.length + (onToggleSelectRow ? 1 : 0)}
+                  className="h-40 text-center"
+                >
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-stone-500"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <LoaderCircle className="h-6 w-6 animate-spin text-blue-600" aria-hidden="true" />
+                    <span className="text-[13px] font-medium">{loadingLabel}</span>
+                  </div>
+                </td>
+              </tr>
             ) : data.length === 0 ? (
               // Empty State Row
               <tr>

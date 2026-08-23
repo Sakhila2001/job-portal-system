@@ -32,6 +32,8 @@ interface JobPostingsTableProps {
   onEditJob?: (job: Job) => void;
   onNewJob?: () => void;
   isLoading?: boolean;
+  /** Dynamic department names derived from real job data */
+  uniqueDepartments?: string[];
 }
 
 export default function JobPostingsTable({
@@ -58,6 +60,7 @@ export default function JobPostingsTable({
   onEditJob,
   onNewJob,
   isLoading = false,
+  uniqueDepartments = [],
 }: JobPostingsTableProps) {
   const filterPills = [
     { id: "All", label: "All" },
@@ -263,6 +266,7 @@ export default function JobPostingsTable({
         data={jobs}
         keyExtractor={(row) => row.id}
         isLoading={isLoading}
+        loadingLabel="Loading job listings..."
         emptyTitle="No Job Postings Found"
         emptyDescription="Create your first job requisition to start receiving candidate applications."
         emptyActionLabel="+ Post a Job"

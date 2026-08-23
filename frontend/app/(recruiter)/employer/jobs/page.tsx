@@ -15,6 +15,7 @@ import { ScheduleInterviewModal } from "@/components/recruiter/RecruiterModals";
 export default function RecruiterJobsPage() {
   const {
     jobs,
+    isLoadingJobs,
     totalJobsCount,
     currentPage,
     totalPages,
@@ -100,6 +101,7 @@ export default function RecruiterJobsPage() {
 
         <JobPostingsTable
           jobs={jobs}
+          isLoading={isLoadingJobs}
           totalJobsCount={totalJobsCount}
           currentPage={currentPage}
           totalPages={totalPages}

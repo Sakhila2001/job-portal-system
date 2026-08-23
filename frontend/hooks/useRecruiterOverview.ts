@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   MOCK_RECRUITER_KPIS,
   MOCK_PLAN_USAGE,
-  MOCK_JOB_POSTINGS,
   MOCK_JOB_APPLICANTS,
   MOCK_HIRING_ANALYTICS,
   MOCK_RECRUITER_CAMPAIGNS,
@@ -15,13 +15,243 @@ import {
 } from "@/lib/mock-data/recruiter";
 import { Job, JobApplication, Interview, CampaignPerformance, MessageThread } from "@/lib/types";
 
+/* ─────────────────── API ➜ Frontend Job Transformer ─────────────────── */
+
+function formatDateShort(dateStr: string | null | undefined): string {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch {
+    return "—";
+  }
+}
+
+function computeExpiresInDays(expiresAt: string | null | undefined): number | null {
+  if (!expiresAt) return null;
+  try {
+    const diff = new Date(expiresAt).getTime() - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  } catch {
+    return null;
+  }
+}
+
+function mapWorkMode(raw: string | null | undefined): "Remote" | "Hybrid" | "On-site" {
+  const wm = (raw || "").toUpperCase();
+  if (wm === "REMOTE") return "Remote";
+  if (wm === "HYBRID") return "Hybrid";
+  return "On-site";
+}
+
+function mapStatus(raw: string | null | undefined): "live" | "draft" | "expiring" | "closed" {
+  const s = (raw || "").toUpperCase();
+  if (s === "PUBLISHED") return "live";
+  if (s === "CLOSED") return "closed";
+  if (s === "DRAFT") return "draft";
+  if (s === "SUSPENDED") return "closed";
+  return "draft";
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformApiJobToJob(apiJob: any): Job {
+  // Extract nested department name
+  const department =
+    typeof apiJob.department === "object" && apiJob.department !== null
+      ? apiJob.department.departmentName || apiJob.department.name || ""
+      : typeof apiJob.department === "string"
+      ? apiJob.department
+      : "";
+
+  // Extract nested designation name
+  const designation =
+    typeof apiJob.designation === "object" && apiJob.designation !== null
+      ? apiJob.designation.designationName || apiJob.designation.name || ""
+      : typeof apiJob.designation === "string"
+      ? apiJob.designation
+      : "";
+
+  // Extract company name
+  const companyName =
+    typeof apiJob.company === "object" && apiJob.company !== null
+      ? apiJob.company.displayName || apiJob.company.name || ""
+      : apiJob.companyName || "";
+
+  const companyId =
+    typeof apiJob.company === "object" && apiJob.company !== null
+      ? apiJob.company.id || apiJob.companyId || ""
+      : apiJob.companyId || "";
+
+  // Extract locations
+  const locations: string[] = Array.isArray(apiJob.locations)
+    ? apiJob.locations.map((loc: any) =>
+        typeof loc === "object" && loc !== null
+          ? loc.location?.city || loc.city || String(loc)
+          : String(loc)
+      )
+    : [];
+
+  // Extract skills
+  const skills: string[] = Array.isArray(apiJob.skills)
+    ? apiJob.skills.map((s: any) =>
+        typeof s === "object" && s !== null
+          ? s.skill?.skillName || s.name || s.skillName || String(s)
+          : String(s)
+      )
+    : [];
+
+  // Extract responsibilities
+  const responsibilities: string[] = Array.isArray(apiJob.responsibilities)
+    ? apiJob.responsibilities.map((r: any) =>
+        typeof r === "object" && r !== null
+          ? r.responsibility || String(r)
+          : String(r)
+      )
+    : [];
+
+  // Extract qualifications
+  const qualifications: string[] = Array.isArray(apiJob.qualifications)
+    ? apiJob.qualifications.map((q: any) =>
+        typeof q === "object" && q !== null
+          ? q.qualification?.qualificationName || q.name || q.qualificationName || String(q)
+          : String(q)
+      )
+    : [];
+
+  // Extract benefits
+  const benefits: string[] = Array.isArray(apiJob.benefits)
+    ? apiJob.benefits.map((b: any) =>
+        typeof b === "object" && b !== null
+          ? b.benefit?.benefitName || b.name || b.benefitName || String(b)
+          : String(b)
+      )
+    : [];
+
+  // Extract tags
+  const tags: string[] = Array.isArray(apiJob.tags)
+    ? apiJob.tags.map((t: any) =>
+        typeof t === "object" && t !== null
+          ? t.tag?.tagName || t.name || t.tagName || String(t)
+          : String(t)
+      )
+    : [];
+
+  // Extract media
+  const media: string[] = Array.isArray(apiJob.media)
+    ? apiJob.media.map((m: any) =>
+        typeof m === "object" && m !== null ? m.mediaUrl || String(m) : String(m)
+      )
+    : [];
+
+  // Compute expires status override
+  const expiresInDays = computeExpiresInDays(apiJob.expiresAt);
+  let status = mapStatus(apiJob.status);
+  if (status === "live" && expiresInDays !== null && expiresInDays <= 5) {
+    status = "expiring";
+  }
+
+  // Salary text
+  const minSalary = apiJob.minSalary ?? apiJob.salaryMin ?? null;
+  const maxSalary = apiJob.maxSalary ?? apiJob.salaryMax ?? null;
+  const currency = apiJob.salaryCurrency || "NPR";
+  let salaryText = "";
+  if (minSalary != null && maxSalary != null) {
+    salaryText = `${currency} ${(minSalary / 100000).toFixed(1)}L – ${(maxSalary / 100000).toFixed(1)}L / year`;
+  } else if (minSalary != null) {
+    salaryText = `${currency} ${(minSalary / 100000).toFixed(1)}L+ / year`;
+  } else if (maxSalary != null) {
+    salaryText = `Up to ${currency} ${(maxSalary / 100000).toFixed(1)}L / year`;
+  }
+
+  // Posted date
+  const postedDate = apiJob.publishedAt
+    ? formatDateShort(apiJob.publishedAt)
+    : apiJob.createdAt
+    ? formatDateShort(apiJob.createdAt)
+    : "—";
+
+  return {
+    id: apiJob.id,
+    companyId,
+    companyName,
+    title: apiJob.title || "Untitled Job",
+    designation,
+    department,
+    employmentType: apiJob.employmentType || "Full-time",
+    workMode: mapWorkMode(apiJob.workMode),
+    seniorityLevel: apiJob.seniorityLevel || undefined,
+    location: locations[0] || apiJob.location || "",
+    minExperienceMonths: apiJob.minExperienceMonths ?? null,
+    maxExperienceMonths: apiJob.maxExperienceMonths ?? null,
+    minSalary,
+    maxSalary,
+    salaryCurrency: currency,
+    showSalary: apiJob.showSalary ?? true,
+    salaryText,
+    applicantsCount: apiJob._count?.applications ?? apiJob.applicantsCount ?? 0,
+    viewsCount: apiJob._count?.views ?? apiJob.viewsCount ?? 0,
+    postedDate,
+    expiresInDays,
+    status,
+    description: apiJob.description || "",
+    skills,
+    responsibilities,
+    qualifications,
+    benefits,
+    tags,
+    locations,
+    media,
+  };
+}
+
+/* ─────────────────── MAIN HOOK ─────────────────── */
+
 export function useRecruiterOverview() {
+  const { tokens } = useAuth();
+
   // Dynamic state arrays
-  const [allJobs, setAllJobs] = useState<Job[]>(MOCK_JOB_POSTINGS);
+  const [allJobs, setAllJobs] = useState<Job[]>([]);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
   const [allApplicants, setAllApplicants] = useState<JobApplication[]>(MOCK_JOB_APPLICANTS);
   const [interviews, setInterviews] = useState<Interview[]>(MOCK_RECRUITER_INTERVIEWS);
   const [campaigns, setCampaigns] = useState<CampaignPerformance[]>(MOCK_RECRUITER_CAMPAIGNS);
   const [messageThreads, setMessageThreads] = useState<MessageThread[]>(MOCK_MESSAGE_THREADS);
+
+  // ── Fetch real jobs from API ────────────────────────────────────────────
+  const fetchJobs = useCallback(async () => {
+    setIsLoadingJobs(true);
+    try {
+      const headers: Record<string, string> = {};
+      if (tokens.accessToken) {
+        headers["Authorization"] = `Bearer ${tokens.accessToken}`;
+      }
+
+      const res = await fetch("/api/recruiter/jobs?page=1&limit=100", {
+        headers,
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        console.error("[useRecruiterOverview] Failed to fetch jobs:", res.status);
+        setIsLoadingJobs(false);
+        return;
+      }
+
+      const data = await res.json();
+      const items = Array.isArray(data.items) ? data.items : Array.isArray(data) ? data : [];
+      const transformed = items.map(transformApiJobToJob);
+      setAllJobs(transformed);
+    } catch (err) {
+      console.error("[useRecruiterOverview] Error fetching jobs:", err);
+    } finally {
+      setIsLoadingJobs(false);
+    }
+  }, [tokens.accessToken]);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
 
   // ── Job Postings table state ────────────────────────────────────────────
   const [jobFilter, setJobFilter] = useState<string>("All");
@@ -35,51 +265,33 @@ export function useRecruiterOverview() {
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([]);
 
   // ── Applicant Pipeline state ────────────────────────────────────────────
-  const [pipelineJobId, setPipelineJobId] = useState<string>(MOCK_JOB_POSTINGS[0]?.id ?? "");
+  const [pipelineJobId, setPipelineJobId] = useState<string>("");
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<string[]>([]);
+
+  // Update pipelineJobId when allJobs loads
+  useEffect(() => {
+    if (allJobs.length > 0 && !pipelineJobId) {
+      setPipelineJobId(allJobs[0].id);
+    }
+  }, [allJobs, pipelineJobId]);
 
   // ── Slide-over detail panels ────────────────────────────────────────────
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedApplicant, setSelectedApplicant] = useState<JobApplication | null>(null);
 
+  // ── Unique departments derived from real fetched jobs ────────────────────
+  const uniqueDepartments = useMemo(() => {
+    const deptSet = new Set<string>();
+    allJobs.forEach((job) => {
+      if (job.department) deptSet.add(job.department);
+    });
+    return Array.from(deptSet).sort();
+  }, [allJobs]);
+
   // ── Add Handlers ────────────────────────────────────────────────────────
   const addJob = (newJob: any) => {
-    const formattedJob: Job = {
-      id: newJob.id || `job-${Date.now()}`,
-      companyId: newJob.companyId || "comp-1",
-      companyName: newJob.companyName || newJob.company?.displayName || "JPS Employer Corp",
-      title: newJob.title || "Untitled Job",
-      department: typeof newJob.department === "object" && newJob.department !== null
-        ? newJob.department.departmentName || newJob.department.name || "Engineering"
-        : (newJob.department || "Engineering"),
-      designation: typeof newJob.designation === "object" && newJob.designation !== null
-        ? newJob.designation.designationName || newJob.designation.name || "Senior Software Engineer"
-        : (newJob.designation || "Senior Software Engineer"),
-      employmentType: newJob.employmentType || "Full-time",
-      workMode: newJob.workMode === "remote" || newJob.workMode === "REMOTE" ? "Remote" : newJob.workMode === "hybrid" || newJob.workMode === "HYBRID" ? "Hybrid" : "On-site",
-      seniorityLevel: newJob.seniorityLevel || "Senior",
-      location: newJob.location || (Array.isArray(newJob.locations) ? newJob.locations[0] : "Kathmandu, Nepal"),
-      minExperienceMonths: newJob.minExperienceMonths ?? 24,
-      maxExperienceMonths: newJob.maxExperienceMonths ?? 72,
-      minSalary: newJob.salaryMin ?? newJob.minSalary ?? 800000,
-      maxSalary: newJob.salaryMax ?? newJob.maxSalary ?? 1800000,
-      salaryCurrency: newJob.salaryCurrency || "NPR",
-      showSalary: newJob.showSalary ?? true,
-      salaryText: `${newJob.salaryCurrency || "NPR"} ${((newJob.salaryMin ?? newJob.minSalary ?? 800000) / 100000).toFixed(1)}L – ${((newJob.salaryMax ?? newJob.maxSalary ?? 1800000) / 100000).toFixed(1)}L / year`,
-      applicantsCount: newJob.applicantsCount ?? 0,
-      viewsCount: newJob.viewsCount ?? 0,
-      postedDate: "Just now",
-      expiresInDays: 30,
-      status: (newJob.status === "PUBLISHED" || newJob.status === "live" || newJob.status === "published") ? "live" : "draft",
-      description: newJob.description || "",
-      skills: Array.isArray(newJob.skills) ? newJob.skills.map((s: any) => typeof s === "object" ? s.name || s.skillName || String(s) : String(s)) : [],
-      qualifications: Array.isArray(newJob.qualifications) ? newJob.qualifications.map((q: any) => typeof q === "object" ? q.name || q.qualificationName || String(q) : String(q)) : [],
-      benefits: Array.isArray(newJob.benefits) ? newJob.benefits.map((b: any) => typeof b === "object" ? b.name || String(b) : String(b)) : [],
-      tags: Array.isArray(newJob.tags) ? newJob.tags.map((t: any) => typeof t === "object" ? t.name || String(t) : String(t)) : [],
-      locations: newJob.locations || [newJob.location || "Kathmandu, Nepal"],
-      media: newJob.media || [],
-    };
-
+    // Transform the API response into a frontend Job & prepend to the list
+    const formattedJob = transformApiJobToJob(newJob);
     setAllJobs((prev) => [formattedJob, ...prev]);
   };
 
@@ -98,7 +310,11 @@ export function useRecruiterOverview() {
       if (departmentFilter !== "All" && job.department !== departmentFilter) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        if (!job.title.toLowerCase().includes(q) && !job.department.toLowerCase().includes(q)) return false;
+        if (
+          !job.title.toLowerCase().includes(q) &&
+          !job.department.toLowerCase().includes(q)
+        )
+          return false;
       }
       return true;
     });
@@ -167,6 +383,7 @@ export function useRecruiterOverview() {
     // Job postings
     jobs: paginatedJobs,
     allJobs,
+    isLoadingJobs,
     totalJobsCount: filteredJobs.length,
     currentPage,
     totalPages,
@@ -186,6 +403,8 @@ export function useRecruiterOverview() {
     toggleAllJobsOnPage,
     handleBulkJobAction,
     addJob,
+    refetchJobs: fetchJobs,
+    uniqueDepartments,
 
     // Applicant pipeline
     allApplicants,

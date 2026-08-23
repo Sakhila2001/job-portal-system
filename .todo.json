@@ -1,0 +1,17 @@
+[
+  {
+    "content": "Inspect job listings loading flow",
+    "active_form": "Inspecting job listings loading flow",
+    "status": "completed"
+  },
+  {
+    "content": "Add table loading indicator",
+    "active_form": "Adding table loading indicator",
+    "status": "completed"
+  },
+  {
+    "content": "Verify behavior and tests",
+    "active_form": "Verifying behavior and tests",
+    "status": "completed"
+  }
+]
