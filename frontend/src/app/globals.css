@@ -1,0 +1,214 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-light: var(--brand-light);
+}
+
+:root {
+  /* Light Theme Color System (Forced overall light version) */
+  --background: #f8fafc; /* Slate-50 background */
+  --foreground: #0f172a; /* Slate-900 foreground */
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  /* Primary blue colors */
+  --primary: #0f4c81; /* Premium corporate blue */
+  --primary-foreground: #ffffff;
+
+  /* Secondary neutral slate/indigo accent (replacing bright neon orange) */
+  --secondary: #1e293b; /* Slate-800 for primary actions */
+  --secondary-foreground: #ffffff;
+
+  --muted: #f1f5f9; /* Slate-100 */
+  --muted-foreground: #64748b; /* Slate-500 */
+
+  --accent: #f8fafc; /* Slate-50 */
+  --accent-foreground: #0f4c81;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #f1f5f9; /* Slate-100 for modern thin borders */
+  --input: #e2e8f0;
+  --ring: #0f4c81; /* Brand primary focus ring */
+
+  /* Brand-specific tokens */
+  --brand-primary: #0f4c81;
+  --brand-secondary: #1e293b; /* Premium slate dark */
+  --brand-accent: #f8fafc;
+  --brand-hover: #0f172a;
+  --brand-light: #eff6ff;
+
+  --radius: 0.5rem; /* Clean, tighter enterprise border radius (8px) */
+  --login-backdrop-blur: 2px;
+}
+
+/* Aligning dark mode variables to preserve the light theme */
+.dark,
+:root[class~="dark"] {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #0f4c81;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f8fafc;
+  --accent-foreground: #0f4c81;
+  --border: #f1f5f9;
+  --input: #e2e8f0;
+  --ring: #0f4c81;
+  --login-backdrop-blur: 2px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50 transition-colors duration-200;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased min-h-screen;
+    background-image: none; /* Flat background color for maximum cleanliness */
+    background-color: #f8fafc;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom premium hover and animation utilities */
+.hover-lift {
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px); /* Tighter, more professional lift */
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.04); /* Subtle shadow shift */
+}
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.login-backdrop {
+  background-color: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(var(--login-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--login-backdrop-blur));
+  transition:
+    backdrop-filter 0.3s ease,
+    background-color 0.3s ease;
+}
+
+/* Keep dashboard actions visually consistent: muted slate instead of rainbow accents. */
+[data-dashboard="true"] button[class*="bg-blue"],
+[data-dashboard="true"] button[class*="bg-emerald"],
+[data-dashboard="true"] button[class*="bg-green"],
+[data-dashboard="true"] button[class*="bg-amber"],
+[data-dashboard="true"] button[class*="bg-yellow"],
+[data-dashboard="true"] button[class*="bg-rose"],
+[data-dashboard="true"] button[class*="bg-red"],
+[data-dashboard="true"] button[class*="bg-indigo"],
+[data-dashboard="true"] button[class*="bg-violet"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-dashboard="true"] button[class*="bg-blue"]:hover,
+[data-dashboard="true"] button[class*="bg-emerald"]:hover,
+[data-dashboard="true"] button[class*="bg-green"]:hover,
+[data-dashboard="true"] button[class*="bg-amber"]:hover,
+[data-dashboard="true"] button[class*="bg-yellow"]:hover,
+[data-dashboard="true"] button[class*="bg-rose"]:hover,
+[data-dashboard="true"] button[class*="bg-red"]:hover,
+[data-dashboard="true"] button[class*="bg-indigo"]:hover,
+[data-dashboard="true"] button[class*="bg-violet"]:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Status pills, icon accents, and inline highlights follow the same neutral system. */
+[data-dashboard="true"] [class*="bg-blue"],
+[data-dashboard="true"] [class*="bg-emerald"],
+[data-dashboard="true"] [class*="bg-green"],
+[data-dashboard="true"] [class*="bg-amber"],
+[data-dashboard="true"] [class*="bg-yellow"],
+[data-dashboard="true"] [class*="bg-orange"],
+[data-dashboard="true"] [class*="bg-rose"],
+[data-dashboard="true"] [class*="bg-red"],
+[data-dashboard="true"] [class*="bg-indigo"],
+[data-dashboard="true"] [class*="bg-violet"],
+[data-dashboard="true"] [class*="bg-purple"],
+[data-dashboard="true"] [class*="bg-pink"],
+[data-dashboard="true"] [class*="bg-cyan"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+[data-dashboard="true"] [class*="border-blue"],
+[data-dashboard="true"] [class*="border-emerald"],
+[data-dashboard="true"] [class*="border-green"],
+[data-dashboard="true"] [class*="border-amber"],
+[data-dashboard="true"] [class*="border-yellow"],
+[data-dashboard="true"] [class*="border-orange"],
+[data-dashboard="true"] [class*="border-rose"],
+[data-dashboard="true"] [class*="border-red"],
+[data-dashboard="true"] [class*="border-indigo"],
+[data-dashboard="true"] [class*="border-violet"],
+[data-dashboard="true"] [class*="border-purple"],
+[data-dashboard="true"] [class*="border-pink"],
+[data-dashboard="true"] [class*="border-cyan"] {
+  border-color: #e2e8f0 !important;
+}
+
+[data-dashboard="true"] [class*="text-blue"],
+[data-dashboard="true"] [class*="text-emerald"],
+[data-dashboard="true"] [class*="text-green"],
+[data-dashboard="true"] [class*="text-amber"],
+[data-dashboard="true"] [class*="text-yellow"],
+[data-dashboard="true"] [class*="text-orange"],
+[data-dashboard="true"] [class*="text-rose"],
+[data-dashboard="true"] [class*="text-red"],
+[data-dashboard="true"] [class*="text-indigo"],
+[data-dashboard="true"] [class*="text-violet"],
+[data-dashboard="true"] [class*="text-purple"],
+[data-dashboard="true"] [class*="text-pink"],
+[data-dashboard="true"] [class*="text-cyan"] {
+  color: #475569 !important;
+}

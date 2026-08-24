@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Identify three-column board and data flow",
+    "active_form": "Identifying three-column board and data flow",
+    "status": "in_progress"
+  },
+  {
+    "content": "Inspect backend schema and APIs",
+    "active_form": "Inspecting backend schema and APIs",
+    "status": "pending"
+  },
+  {
+    "content": "Implement database-backed drag and drop",
+    "active_form": "Implementing database-backed drag and drop",
+    "status": "pending"
+  },
+  {
+    "content": "Apply schema migration and verify",
+    "active_form": "Applying schema migration and verifying",
+    "status": "pending"
+  }
+]
