@@ -1,4 +1,4 @@
-import prisma from "./prisma.js";
+import prisma from "./prisma";
 
 export type Auditable = {
   createdBy?: string | null;

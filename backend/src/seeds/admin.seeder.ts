@@ -1,6 +1,6 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/prisma";
 
 const ADMIN_EMAIL = "admin@jps.com";
 const ADMIN_PASSWORD = "adminJPS12345";

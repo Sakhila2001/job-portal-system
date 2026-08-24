@@ -1,6 +1,6 @@
 import "dotenv/config";
-import prisma from "../lib/prisma.js";
-import { ADMIN_EMAIL } from "./admin.seeder.js";
+import prisma from "../lib/prisma";
+import { ADMIN_EMAIL } from "./admin.seeder";
 
 const DEFAULT_DEPARTMENTS = [
   // Tech & Product

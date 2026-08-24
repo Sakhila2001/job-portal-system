@@ -1,8 +1,8 @@
 import "dotenv/config";
-import { seedAdmin, ADMIN_EMAIL, ADMIN_PASSWORD } from "./admin.seeder.js";
-import { seedDepartments } from "./department.seeder.js";
-import { seedDesignations } from "./designation.seeder.js";
-import prisma from "../lib/prisma.js";
+import { seedAdmin, ADMIN_EMAIL, ADMIN_PASSWORD } from "./admin.seeder";
+import { seedDepartments } from "./department.seeder";
+import { seedDesignations } from "./designation.seeder";
+import prisma from "../lib/prisma";
 
 async function main() {
   const target = (process.argv[2] || "").toLowerCase().trim();
