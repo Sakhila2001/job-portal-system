@@ -2,6 +2,7 @@ import "dotenv/config";
 import { seedAdmin, ADMIN_EMAIL, ADMIN_PASSWORD } from "./admin.seeder";
 import { seedDepartments } from "./department.seeder";
 import { seedDesignations } from "./designation.seeder";
+import { seedJobs } from "./job.seeder";
 import prisma from "../lib/prisma";
 
 async function main() {
@@ -29,6 +30,13 @@ async function main() {
     return;
   }
 
+  if (target === "job" || target === "jobs") {
+    console.log(`[seed] Running ONLY job seeder...`);
+    const jobIds = await seedJobs();
+    console.log(`[seed] ${jobIds.length} job(s) seeded.`);
+    return;
+  }
+
   console.log(`[seed] Running all seeders...`);
   console.log(`[seed] 1. Seeding admin user (${ADMIN_EMAIL})...`);
   const admin = await seedAdmin();
@@ -42,6 +50,10 @@ async function main() {
   console.log(`[seed] 3. Seeding designations...`);
   const designations = await seedDesignations();
   console.log(`[seed] ${designations.length} designation(s) ready.`);
+
+  console.log(`[seed] 4. Seeding jobs...`);
+  const jobIds = await seedJobs();
+  console.log(`[seed] ${jobIds.length} job(s) seeded.`);
 }
 
 main()

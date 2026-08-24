@@ -17,7 +17,7 @@ function paginationMeta(page: number, limit: number, total: number) {
 }
 
 function candidateVisibleWhere(): Prisma.JobWhereInput {
-  return { status: PUBLISHED_STATUS };
+  return { status: PUBLISHED_STATUS, deletedAt: null };
 }
 
 function searchWhere(search?: string): Prisma.JobWhereInput {
@@ -275,6 +275,21 @@ export async function listCandidateJobs(query: JobQueryDto) {
   const where: Prisma.JobWhereInput = {
     ...candidateVisibleWhere(),
     ...(query.employmentType ? { employmentType: query.employmentType } : {}),
+    ...(query.workMode
+      ? {
+          workMode: {
+            equals: query.workMode.toUpperCase(),
+            mode: "insensitive" as const,
+          },
+        }
+      : {}),
+    ...(query.department
+      ? {
+          department: {
+            departmentName: { contains: query.department, mode: "insensitive" },
+          },
+        }
+      : {}),
     ...(query.location
       ? {
           locations: {

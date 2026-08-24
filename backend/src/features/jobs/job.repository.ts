@@ -324,7 +324,7 @@ export class JobRepository {
     return prisma.job.findMany({
       where,
       include: jobInclude,
-      orderBy: { id: "desc" },
+      orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     });

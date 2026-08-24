@@ -126,6 +126,8 @@ export const paginationSchema = z.object({
   search: z.string().trim().optional(),
   location: z.string().trim().optional(),
   employmentType: z.string().trim().optional(),
+  workMode: z.string().trim().optional(),
+  department: z.string().trim().optional(),
 });
 
 export const adminPaginationSchema = paginationSchema.extend({

@@ -18,6 +18,8 @@ export interface Job {
   companyType: "MNC" | "Startup" | "Corporate" | "Indian MNC";
   jobType: "Full Time" | "Internship" | "Contract";
   aboutCompany: string;
+  responsibilities?: string[];
+  qualifications?: string[];
   benefits: { icon: string; title: string; desc: string }[];
   similarJobs: string[]; // Job IDs
 }
@@ -240,6 +242,19 @@ export const jobs: Job[] = [
     companyType: "Corporate",
     jobType: "Full Time",
     aboutCompany: "Energizer is a leader in sustainable energy technology, creating modern energy grid applications, battery management software, and consumer energy trackers. We build high-performance green tech solutions to solve tomorrow's climate and power crises.",
+    responsibilities: [
+      "Develop and maintain web app features using React and Next.js.",
+      "Collaborate with backend engineers to integrate REST APIs.",
+      "Participate in code reviews, standups, and sprint ceremonies.",
+      "Write unit tests and maintain code quality to team standards.",
+      "Contribute to the internal component library and design system.",
+    ],
+    qualifications: [
+      "Bachelor's degree (or pursuing) in Computer Science or a related field.",
+      "Familiarity with version control using Git.",
+      "Basic understanding of REST APIs and HTTP.",
+      "Strong communication and willingness to learn quickly.",
+    ],
     benefits: [
       { icon: "🏥", title: "Comprehensive Health Care", desc: "Top-tier health, dental, and vision insurance covered 100% for you and dependents." },
       { icon: "🏠", title: "Flexible Work Modes", desc: "Work from home up to 3 days a week. We provide a state-of-the-art office workspace." },

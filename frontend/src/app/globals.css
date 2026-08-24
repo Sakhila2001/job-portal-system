@@ -40,11 +40,11 @@
   --popover: #ffffff;
   --popover-foreground: #0f172a;
 
-  /* Primary blue colors */
-  --primary: #0f4c81; /* Premium corporate blue */
+  /* Primary dark colors (matching landing page) */
+  --primary: #0f172a; 
   --primary-foreground: #ffffff;
 
-  /* Secondary neutral slate/indigo accent (replacing bright neon orange) */
+  /* Secondary neutral slate/indigo accent */
   --secondary: #1e293b; /* Slate-800 for primary actions */
   --secondary-foreground: #ffffff;
 
@@ -52,21 +52,21 @@
   --muted-foreground: #64748b; /* Slate-500 */
 
   --accent: #f8fafc; /* Slate-50 */
-  --accent-foreground: #0f4c81;
+  --accent-foreground: #0f172a;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
   --border: #f1f5f9; /* Slate-100 for modern thin borders */
   --input: #e2e8f0;
-  --ring: #0f4c81; /* Brand primary focus ring */
+  --ring: #0f172a; /* Brand primary focus ring */
 
   /* Brand-specific tokens */
-  --brand-primary: #0f4c81;
+  --brand-primary: #0f172a;
   --brand-secondary: #1e293b; /* Premium slate dark */
   --brand-accent: #f8fafc;
-  --brand-hover: #0f172a;
-  --brand-light: #eff6ff;
+  --brand-hover: #1f2937;
+  --brand-light: #f1f5f9;
 
   --radius: 0.5rem; /* Clean, tighter enterprise border radius (8px) */
   --login-backdrop-blur: 2px;
@@ -79,17 +79,17 @@
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
-  --primary: #0f4c81;
+  --primary: #0f172a;
   --primary-foreground: #ffffff;
   --secondary: #1e293b;
   --secondary-foreground: #ffffff;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
   --accent: #f8fafc;
-  --accent-foreground: #0f4c81;
+  --accent-foreground: #0f172a;
   --border: #f1f5f9;
   --input: #e2e8f0;
-  --ring: #0f4c81;
+  --ring: #0f172a;
   --login-backdrop-blur: 2px;
 }
 

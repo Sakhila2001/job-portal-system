@@ -83,6 +83,7 @@ export default function RegisterPage() {
   const handleResend = async () => {
     setResendLoading(true);
     setResendSuccess(false);
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/resend-verification`, {
