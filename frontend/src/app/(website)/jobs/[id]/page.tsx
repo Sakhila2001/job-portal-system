@@ -1,7 +1,5 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import Header from "@/components/ui/header";
-import Footer from "@/components/ui/footer";
 import JobCard from "@/features/jobs/components/job-card";
 import { jobs, companies } from "@/lib/dummy-data";
 import {
@@ -46,10 +44,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <Header />
-
+    <>
       {/* Hero Panel: Job Overview */}
       <div className="w-full bg-white border-b border-border py-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -271,7 +266,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs font-semibold text-slate-600">
-                        <span>Job Security & Stability</span>
+                        <span>Job Security &amp; Stability</span>
                         <span>{company.jobSecurity} / 5</span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -286,7 +281,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs font-semibold text-slate-600">
-                        <span>Salary & Benefits</span>
+                        <span>Salary &amp; Benefits</span>
                         <span>{company.salaryBenefits} / 5</span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -361,8 +356,6 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               </div>
             )}
 
-          
-
             {/* Similar Jobs widget */}
             {similarJobsList.length > 0 && (
               <div className="space-y-4">
@@ -383,7 +376,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
             {/* Job Perks/Benefits block */}
             <div className="bg-white border border-border rounded-3xl p-6 space-y-4 shadow-sm">
               <h3 className="font-bold text-slate-900 text-sm border-b border-slate-50 pb-2">
-                Benefits & Stipends
+                Benefits &amp; Stipends
               </h3>
               <div className="space-y-4">
                 {job.benefits.map((ben, idx) => (
@@ -413,7 +406,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               <div className="flex items-center gap-2 text-amber-700">
                 <ShieldCheck className="h-5 w-5 text-amber-600 shrink-0" />
                 <h4 className="font-bold text-xs uppercase tracking-wider">
-                  Safety & Fraud Tip
+                  Safety &amp; Fraud Tip
                 </h4>
               </div>
               <p className="text-[11px] text-amber-900/80 leading-relaxed">
@@ -431,9 +424,6 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <Footer />
-    </div>
+    </>
   );
 }
